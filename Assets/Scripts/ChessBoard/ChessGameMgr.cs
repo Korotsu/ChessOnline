@@ -200,6 +200,21 @@ public partial class ChessGameMgr : MonoBehaviour
         }
     }
 
+    public void CheckOnlineState(Move move)
+    {
+        if (player.isHost == true)
+        {
+            PlayTurn(move);
+
+            UpdatePieces();
+        }
+
+        else
+        {
+            player.gameObject.GetComponent<ClientScript>().SendData<Move>(move);
+        }
+    }
+
     // used to instantiate newly promoted queen
     private void AddQueenAtPos(int pos)
     {
@@ -411,9 +426,7 @@ public partial class ChessGameMgr : MonoBehaviour
                 move.From = startPos;
                 move.To = destPos;
 
-                PlayTurn(move);
-
-                UpdatePieces();
+                CheckOnlineState(move);
             }
             else
             {

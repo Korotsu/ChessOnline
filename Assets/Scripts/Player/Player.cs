@@ -6,4 +6,6 @@ public class Player : MonoBehaviour
 {
     [System.NonSerialized] public string username = "Guest";
     [SerializeField] public ChessGameMgr.EChessTeam team;
+
+    [System.NonSerialized] public bool isHost = true;
 }
