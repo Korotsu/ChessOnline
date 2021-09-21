@@ -1,0 +1,8 @@
+.vs/
+.vsconfig
+Assembly-CSharp.csproj
+Library/
+Logs/
+obj/
+Temp/
+ProjectSettings/SceneTemplateSettings.json
