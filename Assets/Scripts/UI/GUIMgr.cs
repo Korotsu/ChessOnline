@@ -22,36 +22,43 @@ public class GUIMgr : MonoBehaviour
     }
     #endregion
 
-    Transform whiteToMoveTr = null;
-    Transform blackToMoveTr = null;
-    Text whiteScoreText = null;
-    Text blackScoreText = null;
+    Transform playerTurnTr = null;
+    Text player1ScoreText = null;
+    Text player2ScoreText = null;
+
+    Text playerTurnText = null;
+
+    [SerializeField] public Player player1 = null;
+    [SerializeField] public Player player2 = null;
 
     // Use this for initialization
     void Awake()
     {
-        whiteToMoveTr = transform.Find("WhiteTurnText");
-        blackToMoveTr = transform.Find("BlackTurnText");
+        playerTurnTr = transform.Find("PlayerTurnText");
 
-        whiteToMoveTr.gameObject.SetActive(false);
-        blackToMoveTr.gameObject.SetActive(false);
+        playerTurnText = playerTurnTr.GetComponent<Text>();
 
-        whiteScoreText = transform.Find("WhiteScoreText").GetComponent<Text>();
-        blackScoreText = transform.Find("BlackScoreText").GetComponent<Text>();
+        playerTurnTr.gameObject.SetActive(false);
+
+        player1ScoreText = transform.Find("Player1ScoreText").GetComponent<Text>();
+        player2ScoreText = transform.Find("Player2ScoreText").GetComponent<Text>();
 
         ChessGameMgr.Instance.OnPlayerTurn += DisplayTurn;
         ChessGameMgr.Instance.OnScoreUpdated += UpdateScore;
     }
 	
-    void DisplayTurn(bool isWhiteMove)
+    void DisplayTurn(bool isPlayerMove)
     {
-        whiteToMoveTr.gameObject.SetActive(isWhiteMove);
-        blackToMoveTr.gameObject.SetActive(!isWhiteMove);
+        playerTurnTr.gameObject.SetActive(true);
+        if(isPlayerMove)
+            playerTurnText.text = player1.username + " Turn.";
+        else
+            playerTurnText.text = player2.username + " Turn.";
     }
 
-    void UpdateScore(uint whiteScore, uint blackScore)
+    void UpdateScore(uint player1Score, uint player2Score)
     {
-        whiteScoreText.text = string.Format("White : {0}", whiteScore);
-        blackScoreText.text = string.Format("Black : {0}", blackScore);
+        player1ScoreText.text = string.Format(player1.username + " : {0}", player1Score);
+        player2ScoreText.text = string.Format(player2.username + " : {0}", player2Score);
     }
 }

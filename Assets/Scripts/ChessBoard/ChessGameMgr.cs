@@ -25,7 +25,9 @@ public partial class ChessGameMgr : MonoBehaviour
     #endregion
 
     [SerializeField]
-    private bool IsAIEnabled = true;
+    private bool IsAIEnabled = false;
+    [SerializeField]
+    private Player player = null;
 
     private ChessAI chessAI = null;
     private Transform boardTransform = null;
@@ -125,11 +127,13 @@ public partial class ChessGameMgr : MonoBehaviour
     EChessTeam teamTurn;
 
     List<uint> scores;
+    uint player1Score = 0;
+    uint player2Score = 0;
 
     public delegate void PlayerTurnEvent(bool isWhiteMove);
     public event PlayerTurnEvent OnPlayerTurn = null;
 
-    public delegate void ScoreUpdateEvent(uint whiteScore, uint blackScore);
+    public delegate void ScoreUpdateEvent(uint player1Score, uint player2Score);
     public event ScoreUpdateEvent OnScoreUpdated = null;
 
     public void PrepareGame(bool resetScore = true)
@@ -139,7 +143,8 @@ public partial class ChessGameMgr : MonoBehaviour
         // Start game
         boardState.Reset();
 
-        teamTurn = EChessTeam.White;
+        teamTurn = (EChessTeam)Random.Range(0, 2);
+        //teamTurn = EChessTeam.Black;
         if (scores == null)
         {
             scores = new List<uint>();
@@ -151,6 +156,8 @@ public partial class ChessGameMgr : MonoBehaviour
             scores.Clear();
             scores.Add(0);
             scores.Add(0);
+            player1Score = 0;
+            player2Score = 0;
         }
     }
 
@@ -169,9 +176,14 @@ public partial class ChessGameMgr : MonoBehaviour
             if (boardState.DoesTeamLose(otherTeam))
             {
                 // increase score and reset board
-                scores[(int)teamTurn]++;
+                if (teamTurn == player.team)
+                    player1Score++;
+                else
+                    player2Score++;
+
+                //scores[(int)teamTurn]++;
                 if (OnScoreUpdated != null)
-                    OnScoreUpdated(scores[0], scores[1]);
+                    OnScoreUpdated(player1Score, player2Score);
 
                 PrepareGame(false);
                 // remove extra piece instances if pawn promotions occured
@@ -184,7 +196,7 @@ public partial class ChessGameMgr : MonoBehaviour
             }
             // raise event
             if (OnPlayerTurn != null)
-                OnPlayerTurn(teamTurn == EChessTeam.White);
+                OnPlayerTurn(teamTurn == player.team);
         }
     }
 
@@ -200,7 +212,7 @@ public partial class ChessGameMgr : MonoBehaviour
 
     public bool IsPlayerTurn()
     {
-        return teamTurn == EChessTeam.White;
+        return teamTurn == player.team;
     }
 
     public BoardSquare GetSquare(int pos)
@@ -263,20 +275,14 @@ public partial class ChessGameMgr : MonoBehaviour
         CreatePieces();
 
         if (OnPlayerTurn != null)
-            OnPlayerTurn(teamTurn == EChessTeam.White);
+            OnPlayerTurn(teamTurn == player.team);
         if (OnScoreUpdated != null)
             OnScoreUpdated(scores[0], scores[1]);
     }
 
     void Update()
     {
-        // human player always plays white
-        if (teamTurn == EChessTeam.White)
-            UpdatePlayerTurn();
-        // AI plays black
-        else if (IsAIEnabled)
-            UpdateAITurn();
-        else
+       //if(teamTurn == player.team)
             UpdatePlayerTurn();
     }
     #endregion
