@@ -40,7 +40,11 @@ public class MenuManager : MonoBehaviour
 
     private void OnJoinGame()
     {
-        joinMenu.SetActive(true);
+        if (PlayerAsUsername())
+        {
+            joinMenu.SetActive(true);
+            gameObject.SetActive(false);
+        }
         if (!PlayerAsUsername() || !CheckAdressIP())
             return;
 

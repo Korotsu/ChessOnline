@@ -18,6 +18,7 @@ public class JoinMenu : MonoBehaviour
     }
     private void OnBack()
     {
-        
+        mainMenu.SetActive(true);
+        gameObject.SetActive(false);
     }
 }
