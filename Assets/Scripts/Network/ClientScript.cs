@@ -21,7 +21,8 @@ public class ClientScript : MonoBehaviour
         {
             //create server socket
             IPHostEntry host = Dns.GetHostEntry(hostIPAddress);
-            IPAddress ipAdress = host.AddressList[0];
+            //Dns.GetHostAddresses(hostIPAddress);
+            IPAddress ipAdress = host.AddressList[1];
             socket = new Socket(ipAdress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             IPEndPoint serverEP = new IPEndPoint(ipAdress, port);
 

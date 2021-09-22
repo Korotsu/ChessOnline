@@ -25,12 +25,11 @@ public class ServerClientScript : MonoBehaviour
 
         Console.WriteLine("Starting Server ...");
         socket.Bind(localEP);
-        socket.Listen(1);
+        socket.Listen(10000);
 
         try
         {
             //Console.WriteLine("Waiting for connection ...");
-
             socket.BeginAccept(new AsyncCallback(AcceptCallBack), socket);
 
             //Console.WriteLine("Accepted Client !");
@@ -120,19 +119,17 @@ public class ServerClientScript : MonoBehaviour
     {
         // Get the socket that handles the client request.
         Socket listener = (Socket)result.AsyncState;
-        if (listener.Connected == true)
-        {
-            Socket handler = listener.EndAccept(result);
-            StateObject stateObject = new StateObject();
-            stateObject.workSocket = handler;
 
-            clientSocketList.Add(handler);
+        Socket handler = listener.EndAccept(result);
+        StateObject stateObject = new StateObject();
+        stateObject.workSocket = handler;
 
-            handler.BeginReceive(stateObject.buffer, 0, StateObject.BUFFER_SIZE, 0,
-                           new AsyncCallback(ReceiveCallBack), stateObject);
+        clientSocketList.Add(handler);
 
-            socket.BeginAccept(new AsyncCallback(AcceptCallBack), socket);
-        }
+        handler.BeginReceive(stateObject.buffer, 0, StateObject.BUFFER_SIZE, 0,
+                       new AsyncCallback(ReceiveCallBack), stateObject);
+
+        socket.BeginAccept(new AsyncCallback(AcceptCallBack), socket);
     }
 
     public void ReceiveCallBack(IAsyncResult result)
