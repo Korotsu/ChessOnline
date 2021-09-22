@@ -1,5 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 /*
  * This singleton manages the whole chess game
@@ -84,7 +86,8 @@ public partial class ChessGameMgr : MonoBehaviour
         }
     }
 
-    public struct Move
+    [Serializable]
+    public struct Move : ISerializable
     {
         public int From;
         public int To;
@@ -114,6 +117,18 @@ public partial class ChessGameMgr : MonoBehaviour
         public static bool operator !=(Move move1, Move move2)
         {
             return move1.From != move2.From || move1.To != move2.To;
+        }
+
+        public Move(SerializationInfo info, StreamingContext ctxt)
+        {
+            From = (int)info.GetValue("From", typeof(int));
+            To = (int)info.GetValue("To", typeof(int));
+        }
+
+        public void GetObjectData(SerializationInfo info, StreamingContext ctxt)
+        {
+            info.AddValue("From", From, typeof(int));
+            info.AddValue("To", To, typeof(int));
         }
     }
 
