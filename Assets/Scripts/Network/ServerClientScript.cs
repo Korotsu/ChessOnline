@@ -15,6 +15,7 @@ public class ServerClientScript : MonoBehaviour
     private     List<Socket>    clientSocketList    = new List<Socket>();
     private     bool            connected           = false;
     public      ChessGameMgr    chessGameMgr        = null;
+    private     int             nbPlayer            = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -26,8 +27,9 @@ public class ServerClientScript : MonoBehaviour
 
         Console.WriteLine("Starting Server ...");
         socket.Bind(localEP);
-        socket.Listen(10000);
+        socket.Listen(1);
         connected = true;
+        nbPlayer++;
 
         try
         {
@@ -142,9 +144,11 @@ public class ServerClientScript : MonoBehaviour
 
     public void AcceptCallBack(IAsyncResult result)
     {
-        if (connected)
+        if (connected && nbPlayer < 2)
         {
             Debug.Log("Client connected !");
+            nbPlayer++;
+
             // Get the socket that handles the client request.
             Socket listener = (Socket)result.AsyncState;
             Socket handler = listener.EndAccept(result);
@@ -153,6 +157,16 @@ public class ServerClientScript : MonoBehaviour
             stateObject.workSocket = handler;
 
             clientSocketList.Add(handler);
+            chessGameMgr.enabled = true;
+
+            System.Random rand = new System.Random();
+            
+            int hostTeam    = rand.Next(0, 2);
+            int clientTeam  = 1 - hostTeam;
+
+            GetComponent<Player>().team = (ChessGameMgr.EChessTeam)hostTeam;
+
+            SendData(clientTeam, handler);
 
             handler.BeginReceive(stateObject.buffer, 0, StateObject.BUFFER_SIZE, 0,
                            new AsyncCallback(ReceiveCallBack), stateObject);

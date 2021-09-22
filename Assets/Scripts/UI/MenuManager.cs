@@ -8,7 +8,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private Button quit = null;
     [SerializeField] private InputField username = null;
 
-    [SerializeField] private GameObject chessGameManager = null;
+    [SerializeField] private ChessGameMgr chessGameManager = null;
     [SerializeField] private GameObject scoreCanvas = null;
     [SerializeField] private GameObject joinMenu = null;
 
@@ -17,7 +17,7 @@ public class MenuManager : MonoBehaviour
 
     private void Start()
     {
-        chessGameManager.SetActive(false);
+        chessGameManager.enabled = false;
         scoreCanvas.SetActive(false);
         joinMenu.SetActive(false);
         hostGame.onClick.AddListener(OnHostGame);
@@ -32,7 +32,7 @@ public class MenuManager : MonoBehaviour
 
         Debug.Log("Host game pressed.");
         player.username = username.text;
-        chessGameManager.SetActive(true);
+        //chessGameManager.SetActive(true);
         scoreCanvas.SetActive(true);
         GetComponent<Canvas>().enabled = false;
         player.gameObject.GetComponent<ServerClientScript>().enabled = true;
