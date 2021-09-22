@@ -44,7 +44,7 @@ public class ServerClientScript : MonoBehaviour
 
         catch (Exception e)
         {
-            Console.WriteLine("error = " + e.ToString());
+            Debug.Log("error = " + e.ToString());
         }
     }
 
@@ -66,7 +66,7 @@ public class ServerClientScript : MonoBehaviour
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("error = " + e.ToString());
+                    Debug.Log("error = " + e.ToString());
                 }
 
                 finally
@@ -107,7 +107,7 @@ public class ServerClientScript : MonoBehaviour
         }
         catch (Exception e)
         {
-            Console.WriteLine("error = " + e.ToString());
+            Debug.Log("error = " + e.ToString());
         }
     }
 

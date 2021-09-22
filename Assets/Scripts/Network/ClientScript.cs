@@ -70,7 +70,7 @@ public class ClientScript : MonoBehaviour
         }
         catch (Exception e)
         {
-            Console.WriteLine("error = " + e.ToString());
+            Debug.Log("error = " + e.ToString());
         }
     }
 
@@ -85,7 +85,7 @@ public class ClientScript : MonoBehaviour
 
         catch (Exception e)
         {
-            Console.WriteLine("error = " + e.ToString());
+            Debug.Log("error = " + e.ToString());
         }
 
         return String.Empty;
@@ -109,6 +109,7 @@ public class ClientScript : MonoBehaviour
                 {
                     if (!teamSelected && player)
                     {
+                        teamSelected = false; 
                         player.team = (ChessGameMgr.EChessTeam) SerializationTools.Deserialize(stateObject.buffer);
                     }
 
