@@ -174,7 +174,7 @@ public partial class ChessGameMgr : MonoBehaviour
         }
     }
 
-    public void PlayTurn(Move move)
+    public void PlayTurn(Move move, EChessTeam team)
     {
         if (boardState.IsValidMove(teamTurn, move))
         {
@@ -215,7 +215,7 @@ public partial class ChessGameMgr : MonoBehaviour
 
     public void CheckOnlineState(Move move)
     {
-        PlayTurn(move);
+        PlayTurn(move,player.team);
 
         UpdatePieces();
 
@@ -410,7 +410,7 @@ public partial class ChessGameMgr : MonoBehaviour
     void UpdateAITurn()
     {
         Move move = chessAI.ComputeMove();
-        PlayTurn(move);
+        //PlayTurn(move);
 
         UpdatePieces();
     }

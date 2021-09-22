@@ -14,6 +14,8 @@ public class ClientScript : MonoBehaviour
     public bool connected = false;
     public ChessGameMgr chessGameMgr = null;
     private bool teamSelected = false;
+    [SerializeField] private Player player = null;
+    private bool shouldUpdateScreen = false;
 
     public void Connect(string hostIPAddress)
     {
@@ -105,20 +107,20 @@ public class ClientScript : MonoBehaviour
 
                 if (read != StateObject.BUFFER_SIZE)
                 {
-                    if (!teamSelected)
+                    if (!teamSelected && player)
                     {
-                        GetComponent<Player>().team = (ChessGameMgr.EChessTeam) SerializationTools.Deserialize(stateObject.buffer);
+                        player.team = (ChessGameMgr.EChessTeam) SerializationTools.Deserialize(stateObject.buffer);
                     }
 
                     else
                     {
                         ChessGameMgr.Move move = (ChessGameMgr.Move)SerializationTools.Deserialize(stateObject.buffer);
 
-                        if (move != null && chessGameMgr)
+                        if (move != null && chessGameMgr && player)
                         {
-                            chessGameMgr.PlayTurn(move);
+                            chessGameMgr.PlayTurn(move, (player.team == ChessGameMgr.EChessTeam.White) ? ChessGameMgr.EChessTeam.Black : ChessGameMgr.EChessTeam.White);
 
-                            chessGameMgr.UpdatePieces();
+                            shouldUpdateScreen = true;
                         }
                     }
 
@@ -150,6 +152,16 @@ public class ClientScript : MonoBehaviour
                 s.Shutdown(SocketShutdown.Both);
                 s.Close();
             }
+        }
+    }
+
+    private void Update()
+    {
+        if (shouldUpdateScreen)
+        {
+            shouldUpdateScreen = false;
+
+            chessGameMgr.UpdatePieces();
         }
     }
 }

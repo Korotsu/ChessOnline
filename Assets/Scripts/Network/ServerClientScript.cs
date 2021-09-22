@@ -16,6 +16,9 @@ public class ServerClientScript : MonoBehaviour
     private     bool            connected           = false;
     public      ChessGameMgr    chessGameMgr        = null;
     private     int             nbPlayer            = 0;
+    private     bool            initialized         = false;
+    private     int             hostTeam            = 2;
+    private     bool            shouldUpdateScreen  = false;
 
     // Start is called before the first frame update
     void Start()
@@ -142,6 +145,22 @@ public class ServerClientScript : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (connected && nbPlayer == 2 && !initialized)
+        {
+            initialized             = true;
+            chessGameMgr.enabled    = true;
+            GetComponent<Player>().team = (ChessGameMgr.EChessTeam) hostTeam;
+        }
+
+        if (shouldUpdateScreen)
+        {
+            shouldUpdateScreen = false;
+            chessGameMgr.UpdatePieces();
+        }
+    }
+
     public void AcceptCallBack(IAsyncResult result)
     {
         if (connected && nbPlayer < 2)
@@ -157,14 +176,11 @@ public class ServerClientScript : MonoBehaviour
             stateObject.workSocket = handler;
 
             clientSocketList.Add(handler);
-            chessGameMgr.enabled = true;
 
             System.Random rand = new System.Random();
-            
-            int hostTeam    = rand.Next(0, 2);
-            int clientTeam  = 1 - hostTeam;
 
-            GetComponent<Player>().team = (ChessGameMgr.EChessTeam)hostTeam;
+            hostTeam = rand.Next(0, 2);
+            int clientTeam = 1 - hostTeam;
 
             SendData(clientTeam, handler);
 
@@ -198,9 +214,9 @@ public class ServerClientScript : MonoBehaviour
 
                     if (move != null && chessGameMgr)
                     {
-                        chessGameMgr.PlayTurn(move);
-
-                        chessGameMgr.UpdatePieces();
+                        ChessGameMgr.EChessTeam ht = (ChessGameMgr.EChessTeam)hostTeam;
+                        chessGameMgr.PlayTurn(move, (ht == ChessGameMgr.EChessTeam.White) ? ChessGameMgr.EChessTeam.Black : ChessGameMgr.EChessTeam.White);
+                        shouldUpdateScreen = true;
                     }
 
                     string str = (string) SerializationTools.Deserialize(stateObject.buffer);
@@ -232,6 +248,7 @@ public class ServerClientScript : MonoBehaviour
             }
         }
     }
+   
 }
 
 public class StateObject
