@@ -12,38 +12,30 @@ public class ClientScript : MonoBehaviour
     Socket socket;
     int port = 11000;
     public bool connectionFailed = false;
+    public string hostIPAddress = null;
 
     // Start is called before the first frame update
     void Start()
     {
-        //create server socket
-        IPHostEntry host = Dns.GetHostEntry("localhost");
-        IPAddress ipAdress = host.AddressList[0];
-        socket = new Socket(ipAdress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-    }
-
-    private void Awake()
-    {
-        Connect();
-    }
-
-    public void Connect()
-    {
-        //create server socket
-        IPHostEntry host = Dns.GetHostEntry("localhost");
-        IPAddress ipAdress = host.AddressList[0];
-        IPEndPoint serverEP = new IPEndPoint(ipAdress, port);
-
-        try
+        if (hostIPAddress != null)
         {
-            socket.Connect(serverEP);
-        }
-        catch (Exception e)
-        {
-            connectionFailed = true;
-            if (socket != null)
+            //create server socket
+            IPHostEntry host = Dns.GetHostEntry(hostIPAddress);
+            IPAddress ipAdress = host.AddressList[0];
+            socket = new Socket(ipAdress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            IPEndPoint serverEP = new IPEndPoint(ipAdress, port);
+
+            try
             {
-                socket.Close();
+                socket.Connect(serverEP);
+            }
+            catch (Exception e)
+            {
+                connectionFailed = true;
+                if (socket != null)
+                {
+                    socket.Close();
+                }
             }
         }
     }

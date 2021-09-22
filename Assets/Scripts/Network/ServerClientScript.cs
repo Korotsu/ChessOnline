@@ -19,14 +19,10 @@ public class ServerClientScript : MonoBehaviour
     void Start()
     {
         //create server socket
-        IPHostEntry host = Dns.GetHostEntry("localhost");
-        IPAddress ipAdress = host.AddressList[0];
+        IPAddress ipAdress = NetworkHelper.GetLocalIPAddress();
         localEP = new IPEndPoint(ipAdress, port);
         socket = new Socket(ipAdress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-    }
 
-    private void Awake()
-    {
         Console.WriteLine("Starting Server ...");
         socket.Bind(localEP);
         socket.Listen(1);
@@ -124,16 +120,19 @@ public class ServerClientScript : MonoBehaviour
     {
         // Get the socket that handles the client request.
         Socket listener = (Socket)result.AsyncState;
-        Socket handler = listener.EndAccept(result);
-        StateObject stateObject = new StateObject();
-        stateObject.workSocket = handler;
+        if (listener.Connected == true)
+        {
+            Socket handler = listener.EndAccept(result);
+            StateObject stateObject = new StateObject();
+            stateObject.workSocket = handler;
 
-        clientSocketList.Add(handler);
+            clientSocketList.Add(handler);
 
-        handler.BeginReceive(stateObject.buffer, 0, StateObject.BUFFER_SIZE, 0,
-                       new AsyncCallback(ReceiveCallBack), stateObject);
+            handler.BeginReceive(stateObject.buffer, 0, StateObject.BUFFER_SIZE, 0,
+                           new AsyncCallback(ReceiveCallBack), stateObject);
 
-        socket.BeginAccept(new AsyncCallback(AcceptCallBack), socket);
+            socket.BeginAccept(new AsyncCallback(AcceptCallBack), socket);
+        }
     }
 
     public void ReceiveCallBack(IAsyncResult result)

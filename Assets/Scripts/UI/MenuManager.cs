@@ -33,6 +33,7 @@ public class MenuManager : MonoBehaviour
         chessGameManager.SetActive(true);
         scoreCanvas.SetActive(true);
         GetComponent<Canvas>().enabled = false;
+        player.gameObject.GetComponent<ServerClientScript>().enabled = true;
     }
 
     private void OnJoinGame()
@@ -42,6 +43,9 @@ public class MenuManager : MonoBehaviour
 
         Debug.Log("Join game pressed.");
         player.username = username.text;
+        ClientScript cs = player.gameObject.GetComponent<ClientScript>();
+        cs.hostIPAddress = serverIPAdress.text;
+        cs.enabled = true;
     }
     private void OnQuit()
     {
