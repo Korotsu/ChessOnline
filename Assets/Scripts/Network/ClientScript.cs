@@ -11,32 +11,28 @@ public class ClientScript : MonoBehaviour
 {
     Socket socket;
     int port = 11000;
-    public bool connectionFailed = false;
-    public string hostIPAddress = null;
+    public bool connected = false;
 
-    // Start is called before the first frame update
-    void Start()
+    public void Connect(string hostIPAddress)
     {
-        if (hostIPAddress != null)
-        {
-            //create server socket
-            IPHostEntry host = Dns.GetHostEntry(hostIPAddress);
-            //Dns.GetHostAddresses(hostIPAddress);
-            IPAddress ipAdress = host.AddressList[1];
-            socket = new Socket(ipAdress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            IPEndPoint serverEP = new IPEndPoint(ipAdress, port);
+        //create server socket
+        IPHostEntry host = Dns.GetHostEntry(hostIPAddress);
+        //Dns.GetHostAddresses(hostIPAddress);
+        IPAddress ipAdress = host.AddressList[1];
+        socket = new Socket(ipAdress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+        IPEndPoint serverEP = new IPEndPoint(ipAdress, port);
 
-            try
+        try
+        {
+            socket.Connect(serverEP);
+            connected = true;
+        }
+        catch (Exception e)
+        {
+            connected = false;
+            if (socket != null)
             {
-                socket.Connect(serverEP);
-            }
-            catch (Exception e)
-            {
-                connectionFailed = true;
-                if (socket != null)
-                {
-                    socket.Close();
-                }
+                socket.Close();
             }
         }
     }

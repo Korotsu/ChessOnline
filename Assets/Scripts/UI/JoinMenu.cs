@@ -6,7 +6,10 @@ public class JoinMenu : MonoBehaviour
     [SerializeField] private Button joinButton = null;
     [SerializeField] private Button backButton = null;
     [SerializeField] private InputField serverIPAdress = null;
+
     [SerializeField] private GameObject mainMenu = null;
+    [SerializeField] private GameObject chessGameManager = null;
+    [SerializeField] private GameObject scoreCanvas = null;
 
     [SerializeField] public Player player;
     private void Start()
@@ -20,9 +23,27 @@ public class JoinMenu : MonoBehaviour
         if (!CheckAdressIP())
             return;
         Debug.Log("Join game pressed.");
+
         ClientScript cs = player.gameObject.GetComponent<ClientScript>();
-        cs.hostIPAddress = serverIPAdress.text;
-        cs.enabled = true;
+
+        if (cs.enabled)
+        {
+            cs.Connect(serverIPAdress.text);
+        }
+
+        else
+        {
+            cs.enabled = true;
+        }
+        
+        if (cs.connected)
+        {
+            chessGameManager.SetActive(true);
+            scoreCanvas.SetActive(true);
+            GetComponent<Canvas>().enabled = false;
+        }
+
+
     }
     private void OnBack()
     {

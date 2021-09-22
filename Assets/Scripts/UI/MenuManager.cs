@@ -7,7 +7,6 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private Button joinGame = null;
     [SerializeField] private Button quit = null;
     [SerializeField] private InputField username = null;
-    //[SerializeField] private InputField serverIPAdress = null;
 
     [SerializeField] private GameObject chessGameManager = null;
     [SerializeField] private GameObject scoreCanvas = null;
