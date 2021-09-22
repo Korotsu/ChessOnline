@@ -18,6 +18,11 @@
           <e p="Misc" t="Include">
             <e p="CameraLookAt.cs" t="Include" />
           </e>
+          <e p="Network" t="Include">
+            <e p="ClientScript.cs" t="Include" />
+            <e p="SerializationTools.cs" t="Include" />
+            <e p="ServerClientScript.cs" t="Include" />
+          </e>
           <e p="Player" t="Include">
             <e p="Player.cs" t="Include" />
           </e>

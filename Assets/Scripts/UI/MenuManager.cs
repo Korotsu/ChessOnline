@@ -11,6 +11,8 @@ public class MenuManager : MonoBehaviour
 
     [SerializeField] private GameObject chessGameManager = null;
     [SerializeField] private GameObject scoreCanvas = null;
+    [SerializeField] private GameObject joinMenu = null;
+
 
     [SerializeField] public Player player;
 
@@ -18,6 +20,7 @@ public class MenuManager : MonoBehaviour
     {
         chessGameManager.SetActive(false);
         scoreCanvas.SetActive(false);
+        joinMenu.SetActive(false);
         hostGame.onClick.AddListener(OnHostGame);
         joinGame.onClick.AddListener(OnJoinGame);
         quit.onClick.AddListener(OnQuit);
@@ -37,6 +40,7 @@ public class MenuManager : MonoBehaviour
 
     private void OnJoinGame()
     {
+        joinMenu.SetActive(true);
         if (!PlayerAsUsername() || !CheckAdressIP())
             return;
 

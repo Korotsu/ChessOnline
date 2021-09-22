@@ -24,8 +24,8 @@ public partial class ChessGameMgr : MonoBehaviour
     }
     #endregion
 
-    [SerializeField]
-    private bool IsAIEnabled = false;
+    //[SerializeField]
+    //private bool IsAIEnabled = false;
     [SerializeField]
     private Player player = null;
 
@@ -142,9 +142,7 @@ public partial class ChessGameMgr : MonoBehaviour
 
         // Start game
         boardState.Reset();
-
-        teamTurn = (EChessTeam)Random.Range(0, 2);
-        //teamTurn = EChessTeam.Black;
+        teamTurn = EChessTeam.White;
         if (scores == null)
         {
             scores = new List<uint>();
@@ -297,7 +295,7 @@ public partial class ChessGameMgr : MonoBehaviour
 
     void Update()
     {
-       //if(teamTurn == player.team)
+       if(teamTurn == player.team)
             UpdatePlayerTurn();
     }
     #endregion
