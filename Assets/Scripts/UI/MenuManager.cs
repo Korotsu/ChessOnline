@@ -7,7 +7,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private Button joinGame = null;
     [SerializeField] private Button quit = null;
     [SerializeField] private InputField username = null;
-    [SerializeField] private InputField serverIPAdress = null;
+    //[SerializeField] private InputField serverIPAdress = null;
 
     [SerializeField] private GameObject chessGameManager = null;
     [SerializeField] private GameObject scoreCanvas = null;
@@ -36,20 +36,18 @@ public class MenuManager : MonoBehaviour
         chessGameManager.SetActive(true);
         scoreCanvas.SetActive(true);
         GetComponent<Canvas>().enabled = false;
+        player.gameObject.GetComponent<ServerClientScript>().enabled = true;
     }
 
     private void OnJoinGame()
     {
-        if (PlayerAsUsername())
-        {
-            joinMenu.SetActive(true);
-            gameObject.SetActive(false);
-        }
-        if (!PlayerAsUsername() || !CheckAdressIP())
+        if (!PlayerAsUsername())
             return;
 
         Debug.Log("Join game pressed.");
         player.username = username.text;
+        joinMenu.SetActive(true);
+        gameObject.SetActive(false);
     }
     private void OnQuit()
     {
@@ -65,30 +63,6 @@ public class MenuManager : MonoBehaviour
             return false;
         }
 
-        return true;
-    }
-    public bool CheckAdressIP()
-    {
-        if (serverIPAdress.text == "")
-        {
-            Debug.Log("IP adress is not valid.");
-            return false;
-        }
-        string[] splitValues = serverIPAdress.text.Split('.');
-        if (splitValues.Length != 4)
-        {
-            Debug.Log("IP adress is not valid.");
-            return false;
-        }
-        foreach (string value in splitValues)
-        {
-            byte r;
-            if (!byte.TryParse(value, out r))
-            {
-                Debug.Log("IP adress is not valid.");
-                return false;
-            }
-        }
         return true;
     }
 }
