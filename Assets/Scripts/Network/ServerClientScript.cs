@@ -9,11 +9,12 @@ using SerializationTool;
 
 public class ServerClientScript : MonoBehaviour
 {
-    Socket socket;
-    IPEndPoint localEP;
-    int port = 11000;
-    public List<Socket> clientSocketList = new List<Socket>();
-    public bool hasToDisconnect = false;
+    private     Socket          socket;
+    private     IPEndPoint      localEP;
+    private     int             port                = 11000;
+    private     List<Socket>    clientSocketList    = new List<Socket>();
+    private     bool            connected           = false;
+    public      ChessGameMgr    chessGameMgr        = null;
 
     // Start is called before the first frame update
     void Start()
@@ -26,6 +27,7 @@ public class ServerClientScript : MonoBehaviour
         Console.WriteLine("Starting Server ...");
         socket.Bind(localEP);
         socket.Listen(10000);
+        connected = true;
 
         try
         {
@@ -73,6 +75,7 @@ public class ServerClientScript : MonoBehaviour
         {
             //no shutdown necessary
             socket.Close();
+            connected = false;
         }
     }
 
@@ -82,6 +85,20 @@ public class ServerClientScript : MonoBehaviour
         try
         {
             client.Send(msg);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("error = " + e.ToString());
+        }
+    }
+
+    public void SendData<T>(T _data, Socket client)
+    {
+        Byte[] dataMSG = SerializationTools.Serialize<T>(_data);
+
+        try
+        {
+            client.Send(dataMSG);
         }
         catch (Exception e)
         {
@@ -115,63 +132,90 @@ public class ServerClientScript : MonoBehaviour
         }
     }
 
+    public void BroadCastData<T>(T _data)
+    {
+        foreach (Socket client in clientSocketList)
+        {
+            SendData<T>(_data, client);
+        }
+    }
+
     public void AcceptCallBack(IAsyncResult result)
     {
-        // Get the socket that handles the client request.
-        Socket listener = (Socket)result.AsyncState;
+        if (connected)
+        {
+            Debug.Log("Client connected !");
+            // Get the socket that handles the client request.
+            Socket listener = (Socket)result.AsyncState;
+            Socket handler = listener.EndAccept(result);
+            
+            StateObject stateObject = new StateObject();
+            stateObject.workSocket = handler;
 
-        Socket handler = listener.EndAccept(result);
-        StateObject stateObject = new StateObject();
-        stateObject.workSocket = handler;
+            clientSocketList.Add(handler);
 
-        clientSocketList.Add(handler);
+            handler.BeginReceive(stateObject.buffer, 0, StateObject.BUFFER_SIZE, 0,
+                           new AsyncCallback(ReceiveCallBack), stateObject);
 
-        handler.BeginReceive(stateObject.buffer, 0, StateObject.BUFFER_SIZE, 0,
-                       new AsyncCallback(ReceiveCallBack), stateObject);
-
-        socket.BeginAccept(new AsyncCallback(AcceptCallBack), socket);
+            socket.BeginAccept(new AsyncCallback(AcceptCallBack), socket);
+        }
     }
 
     public void ReceiveCallBack(IAsyncResult result)
     {
-        StateObject stateObject = (StateObject)result.AsyncState;
-
-        Socket s = stateObject.workSocket;
-
-        int read = s.EndReceive(result);
-
-        if (read > 0)
+        if (connected)
         {
 
-            //stateObject.stringBuilder.Append(Encoding.ASCII.GetString(stateObject.buffer, 0, read));  
+            StateObject stateObject = (StateObject)result.AsyncState;
 
-            if (read != StateObject.BUFFER_SIZE)
+            Socket s = stateObject.workSocket;
+
+            int read = s.EndReceive(result);
+
+            if (read > 0)
             {
 
-                object obj = SerializationTools.Deserialize(stateObject.buffer);
+                //stateObject.stringBuilder.Append(Encoding.ASCII.GetString(stateObject.buffer, 0, read));  
 
-                string strContent = obj.ToString();
-                //strContent = stateObject.stringBuilder.ToString();
-                Console.WriteLine(String.Format("Read {0} byte from socket" +
-                             "data = {1} ", stateObject.buffer.Length, strContent));
+                if (read != StateObject.BUFFER_SIZE)
+                {
 
+                    ChessGameMgr.Move move = (ChessGameMgr.Move) SerializationTools.Deserialize(stateObject.buffer);
+
+                    if (move != null && chessGameMgr)
+                    {
+                        chessGameMgr.PlayTurn(move);
+
+                        chessGameMgr.UpdatePieces();
+                    }
+
+                    string str = (string) SerializationTools.Deserialize(stateObject.buffer);
+
+                    if (str != null)
+                    {
+                        //strContent = stateObject.stringBuilder.ToString();
+                        Console.WriteLine(String.Format("Read {0} byte from socket" +
+                                     "data = {1} ", stateObject.buffer.Length, str));
+                    }
+
+                }
+
+                s.BeginReceive(stateObject.buffer, 0, StateObject.BUFFER_SIZE, 0,
+                                         new AsyncCallback(ReceiveCallBack), stateObject);
             }
-
-            s.BeginReceive(stateObject.buffer, 0, StateObject.BUFFER_SIZE, 0,
-                                     new AsyncCallback(ReceiveCallBack), stateObject);
-        }
-        else
-        {
-            if (stateObject.stringBuilder.Length > 1)
+            else
             {
-                //All of the data has been read, so displays it to the console
-                string strContent;
-                strContent = stateObject.stringBuilder.ToString();
-                Console.WriteLine(String.Format("Read {0} byte from socket" +
-                                 "data = {1} ", strContent.Length, strContent));
+                if (stateObject.stringBuilder.Length > 1)
+                {
+                    //All of the data has been read, so displays it to the console
+                    string strContent;
+                    strContent = stateObject.stringBuilder.ToString();
+                    Console.WriteLine(String.Format("Read {0} byte from socket" +
+                                     "data = {1} ", strContent.Length, strContent));
+                }
+                s.Shutdown(SocketShutdown.Both);
+                s.Close();
             }
-            s.Shutdown(SocketShutdown.Both);
-            s.Close();
         }
     }
 }

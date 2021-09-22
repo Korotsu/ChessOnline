@@ -202,16 +202,18 @@ public partial class ChessGameMgr : MonoBehaviour
 
     public void CheckOnlineState(Move move)
     {
+        PlayTurn(move);
+
+        UpdatePieces();
+
         if (player.isHost == true)
         {
-            PlayTurn(move);
-
-            UpdatePieces();
+            player.gameObject.GetComponent<ServerClientScript>().BroadCastData(move);    
         }
 
         else
         {
-            player.gameObject.GetComponent<ClientScript>().SendData<Move>(move);
+            player.gameObject.GetComponent<ClientScript>().SendData(move);
         }
     }
 
@@ -365,7 +367,7 @@ public partial class ChessGameMgr : MonoBehaviour
         }
     }
 
-    void UpdatePieces()
+    public void UpdatePieces()
     {
         teamPiecesArray[0].Hide();
         teamPiecesArray[1].Hide();
