@@ -36,6 +36,7 @@ public class MenuManager : MonoBehaviour
         scoreCanvas.SetActive(true);
         GetComponent<Canvas>().enabled = false;
         player.gameObject.GetComponent<ServerClientScript>().enabled = true;
+        player.isHost = true;
     }
 
     private void OnJoinGame()
@@ -47,6 +48,7 @@ public class MenuManager : MonoBehaviour
         player.username = username.text;
         joinMenu.SetActive(true);
         gameObject.SetActive(false);
+        player.isHost = false;
     }
     private void OnQuit()
     {

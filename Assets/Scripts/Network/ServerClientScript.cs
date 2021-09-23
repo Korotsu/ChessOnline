@@ -209,29 +209,25 @@ public class ServerClientScript : MonoBehaviour
 
                 if (read != StateObject.BUFFER_SIZE)
                 {
+                    ChessGameMgr.Move move = new ChessGameMgr.Move();
 
-                    ChessGameMgr.Move move = (ChessGameMgr.Move) SerializationTools.Deserialize(stateObject.buffer);
-
-                    if (move != null && chessGameMgr)
+                    try
                     {
-                        ChessGameMgr.EChessTeam ht = (ChessGameMgr.EChessTeam)hostTeam;
-                        chessGameMgr.PlayTurn(move, (ht == ChessGameMgr.EChessTeam.White) ? ChessGameMgr.EChessTeam.Black : ChessGameMgr.EChessTeam.White);
-                        shouldUpdateScreen = true;
+                        move = (ChessGameMgr.Move) SerializationTools.Deserialize(stateObject.buffer);
+                    }
+                    finally
+                    {
+                        if (move != null && chessGameMgr)
+                        {
+                            ChessGameMgr.EChessTeam ht = (ChessGameMgr.EChessTeam)hostTeam;
+                            chessGameMgr.PlayTurn(move, (ht == ChessGameMgr.EChessTeam.White) ? ChessGameMgr.EChessTeam.Black : ChessGameMgr.EChessTeam.White);
+                            shouldUpdateScreen = true;
+                        }
                     }
 
-                    string str = (string) SerializationTools.Deserialize(stateObject.buffer);
-
-                    if (str != null)
-                    {
-                        //strContent = stateObject.stringBuilder.ToString();
-                        Console.WriteLine(String.Format("Read {0} byte from socket" +
-                                     "data = {1} ", stateObject.buffer.Length, str));
-                    }
-
-                }
-
-                s.BeginReceive(stateObject.buffer, 0, StateObject.BUFFER_SIZE, 0,
+                    s.BeginReceive(stateObject.buffer, 0, StateObject.BUFFER_SIZE, 0,
                                          new AsyncCallback(ReceiveCallBack), stateObject);
+                }
             }
             else
             {

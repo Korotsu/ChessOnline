@@ -22,26 +22,40 @@ public class ClientScript : MonoBehaviour
         //create server socket
         IPHostEntry host = Dns.GetHostEntry(hostIPAddress);
         //Dns.GetHostAddresses(hostIPAddress);
-        IPAddress ipAdress = host.AddressList[1];
-        socket = new Socket(ipAdress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-        IPEndPoint serverEP = new IPEndPoint(ipAdress, port);
 
-        try
+        IPAddress ipAdress = null;
+        
+        foreach (IPAddress ip in host.AddressList)
         {
-            socket.Connect(serverEP);
-            connected = true;
-            StateObject stateObject = new StateObject();
-            stateObject.workSocket = socket;
-
-            socket.BeginReceive(stateObject.buffer, 0, StateObject.BUFFER_SIZE, 0,
-                          new AsyncCallback(ReceiveCallBack), stateObject);
-        }
-        catch (Exception e)
-        {
-            connected = false;
-            if (socket != null)
+            if (ip.AddressFamily == AddressFamily.InterNetwork)
             {
-                socket.Close();
+                ipAdress = ip;
+            }
+        }
+
+        if (ipAdress != null)
+        {
+
+            socket = new Socket(ipAdress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            IPEndPoint serverEP = new IPEndPoint(ipAdress, port);
+
+            try
+            {
+                socket.Connect(serverEP);
+                connected = true;
+                StateObject stateObject = new StateObject();
+                stateObject.workSocket = socket;
+
+                socket.BeginReceive(stateObject.buffer, 0, StateObject.BUFFER_SIZE, 0,
+                              new AsyncCallback(ReceiveCallBack), stateObject);
+            }
+            catch (Exception e)
+            {
+                connected = false;
+                if (socket != null)
+                {
+                    socket.Close();
+                }
             }
         }
     }
@@ -109,31 +123,52 @@ public class ClientScript : MonoBehaviour
                 {
                     if (!teamSelected && player)
                     {
-                        teamSelected = false; 
-                        player.team = (ChessGameMgr.EChessTeam) SerializationTools.Deserialize(stateObject.buffer);
+                        try
+                        {
+                            player.team = (ChessGameMgr.EChessTeam) SerializationTools.Deserialize(stateObject.buffer);
+                        }
+                        finally
+                        {
+                            teamSelected = false;
+                        }
                     }
 
                     else
                     {
-                        ChessGameMgr.Move move = (ChessGameMgr.Move)SerializationTools.Deserialize(stateObject.buffer);
+                        ChessGameMgr.Move move = new ChessGameMgr.Move();
 
-                        if (move != null && chessGameMgr && player)
+                        try
                         {
-                            chessGameMgr.PlayTurn(move, (player.team == ChessGameMgr.EChessTeam.White) ? ChessGameMgr.EChessTeam.Black : ChessGameMgr.EChessTeam.White);
-
-                            shouldUpdateScreen = true;
+                            move = (ChessGameMgr.Move)SerializationTools.Deserialize(stateObject.buffer);
                         }
+                        finally
+                        {
+                            if (chessGameMgr && player)
+                            {
+                                chessGameMgr.PlayTurn(move, (player.team == ChessGameMgr.EChessTeam.White) ? ChessGameMgr.EChessTeam.Black : ChessGameMgr.EChessTeam.White);
+
+                                shouldUpdateScreen = true;
+                            }
+                        }
+
                     }
 
+                    /*string str;
 
-                    string str = (string)SerializationTools.Deserialize(stateObject.buffer);
-
-                    if (str != null)
+                    try
                     {
-                        //strContent = stateObject.stringBuilder.ToString();
-                        Console.WriteLine(String.Format("Read {0} byte from socket" +
-                                     "data = {1} ", stateObject.buffer.Length, str));
+                        str = (string)SerializationTools.Deserialize(stateObject.buffer);
                     }
+                    finally
+                    {
+                        if (str != null)
+                        {
+                            //strContent = stateObject.stringBuilder.ToString();
+                            Console.WriteLine(String.Format("Read {0} byte from socket" +
+                                         "data = {1} ", stateObject.buffer.Length, str));
+                        }
+                    }*/
+
 
                 }
 
