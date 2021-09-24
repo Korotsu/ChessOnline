@@ -6,3 +6,4 @@ Logs/
 obj/
 Temp/
 ProjectSettings/SceneTemplateSettings.json
+*.sln
