@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using UnityEngine;
 
-[Serializable]
 public class Player : MonoBehaviour
 {
     [System.NonSerialized] public PlayerData playerData = new PlayerData(); 
 }
 
+[Serializable]
 public class PlayerData : ISerializable
 {
     [System.NonSerialized] public string username = "Guest";
