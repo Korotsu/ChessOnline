@@ -37,7 +37,6 @@ public class MenuManager : MonoBehaviour
         GetComponent<Canvas>().enabled = false;
         player.gameObject.GetComponent<ServerClientScript>().enabled = true;
         player.playerData.isHost = true;
-        player.gameObject.GetComponent<ServerClientScript>().BroadCastData(player);
     }
 
     private void OnJoinGame()

@@ -203,7 +203,7 @@ public class ServerClientScript : MonoBehaviour
             hostTeam = rand.Next(0, 2);
             int clientTeam = 1 - hostTeam;
 
-            player2.playerData.team = (ChessGameMgr.EChessTeam)1 - hostTeam;
+            player2.playerData.team = (ChessGameMgr.EChessTeam)(1 - hostTeam);
             player2.playerData.username = player1.playerData.username;
             SendData(player2.playerData, handler);
 
