@@ -11,7 +11,7 @@ public class JoinMenu : MonoBehaviour
     [SerializeField] private ChessGameMgr chessGameManager = null;
     [SerializeField] private GameObject scoreCanvas = null;
 
-    [SerializeField] public Player player;
+    public Player player = GUIMgr.player1;
     private void Start()
     {
         joinButton.onClick.AddListener(OnJoin);

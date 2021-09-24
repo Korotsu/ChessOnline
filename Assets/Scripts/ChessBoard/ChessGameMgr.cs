@@ -28,9 +28,7 @@ public partial class ChessGameMgr : MonoBehaviour
 
     //[SerializeField]
     //private bool IsAIEnabled = false;
-    [SerializeField]
-    private Player player = null;
-
+    private Player player = GUIMgr.player1;
     private ChessAI chessAI = null;
     private Transform boardTransform = null;
     private static int BOARD_SIZE = 8;

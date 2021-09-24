@@ -14,8 +14,8 @@ public class CameraLookAt : MonoBehaviour
     private float zPosition = 12f;
     [SerializeField]
     private float height = 32f;
-    [SerializeField]
-    private Player player = null;
+
+    private Player player = GUIMgr.player1;
 
     void Update ()
     {

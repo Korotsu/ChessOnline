@@ -14,7 +14,7 @@ public class ClientScript : MonoBehaviour
     public bool connected                       = false;
     public ChessGameMgr chessGameMgr            = null;
     private bool teamSelected                   = false;
-    [SerializeField] private Player player      = null;
+    private Player player                       = GUIMgr.player1;
     private bool shouldPlayTurn                 = false;
     private ChessGameMgr.Move lastServerMove    = new ChessGameMgr.Move();
 

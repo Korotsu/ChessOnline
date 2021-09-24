@@ -13,7 +13,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private GameObject joinMenu = null;
 
 
-    [SerializeField] public Player player;
+    public Player player = GUIMgr.player1;
 
     private void Start()
     {

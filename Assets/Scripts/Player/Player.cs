@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 using UnityEngine;
 
 [Serializable]
-public class Player : ISerializable
+public class Player : MonoBehaviour, ISerializable
 {
     [System.NonSerialized] public string username = "Guest";
     [SerializeField] public ChessGameMgr.EChessTeam team;
