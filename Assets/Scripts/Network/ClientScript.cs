@@ -14,12 +14,13 @@ public class ClientScript : MonoBehaviour
     public bool                 connected               = false;
     public ChessGameMgr         chessGameMgr            = null;
     private bool                teamSelected            = false;
-    private Player              player                  = null;
     private bool                shouldPlayTurn          = false;
     private ChessGameMgr.Move   lastServerMove          = new ChessGameMgr.Move();
-    private Player              player2                 = null;
     private bool                shouldProcessDataBuffer = false;
     private List<byte[]>        dataBufferList          = new List<byte[]>();
+    
+    [SerializeField]    private Player player           = null;
+    [SerializeField]    private Player player2          = null;
 
     public void Connect(string hostIPAddress)
     {

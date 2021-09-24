@@ -20,9 +20,10 @@ public class ServerClientScript : MonoBehaviour
     private     int                 hostTeam                = 2;
     private     bool                shouldPlayTurn          = false;
     private     ChessGameMgr.Move   lastClientMove          = new ChessGameMgr.Move();
-    private     Player              player2                 = null;
     private     bool                shouldProcessDataBuffer = false;
     private     List<byte[]>        dataBufferList          = new List<byte[]>();
+
+    [SerializeField] private Player player2                 = null;
 
     // Start is called before the first frame update
     void Start()
