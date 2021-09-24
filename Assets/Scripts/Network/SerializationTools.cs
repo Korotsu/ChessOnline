@@ -47,27 +47,4 @@ namespace SerializationTool
             }
         }
     }
-
-
-
-    [Serializable]
-    public class Player : ISerializable
-    {
-        public float speed = 5;
-        public float pos = 2;
-
-        public Player() { }
-
-        public Player(SerializationInfo info, StreamingContext ctxt)
-        {
-            speed = (float)info.GetValue("speed", typeof(float));
-            pos = (float)info.GetValue("pos", typeof(float));
-        }
-
-        public void GetObjectData(SerializationInfo info, StreamingContext ctxt)
-        {
-            info.AddValue("speed", speed, typeof(float));
-            info.AddValue("pos", pos, typeof(float));
-        }
-    }
 }
