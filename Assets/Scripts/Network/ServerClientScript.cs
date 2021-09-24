@@ -209,21 +209,7 @@ public class ServerClientScript : MonoBehaviour
 
                 if (read != StateObject.BUFFER_SIZE)
                 {
-                    ChessGameMgr.Move move = new ChessGameMgr.Move();
-
-                    try
-                    {
-                        move = (ChessGameMgr.Move) SerializationTools.Deserialize(stateObject.buffer);
-                    }
-                    finally
-                    {
-                        if (move != null && chessGameMgr)
-                        {
-                            ChessGameMgr.EChessTeam ht = (ChessGameMgr.EChessTeam)hostTeam;
-                            chessGameMgr.PlayTurn(move, (ht == ChessGameMgr.EChessTeam.White) ? ChessGameMgr.EChessTeam.Black : ChessGameMgr.EChessTeam.White);
-                            shouldUpdateScreen = true;
-                        }
-                    }
+                    checkConvertProcess(stateObject.buffer);
 
                     s.BeginReceive(stateObject.buffer, 0, StateObject.BUFFER_SIZE, 0,
                                          new AsyncCallback(ReceiveCallBack), stateObject);
@@ -244,7 +230,28 @@ public class ServerClientScript : MonoBehaviour
             }
         }
     }
-   
+
+    private void checkConvertProcess(byte[] buffer)
+    {
+        var value = SerializationTools.Deserialize(buffer);
+
+        switch (value)
+        {
+            case ChessGameMgr.Move move:
+                if (chessGameMgr)
+                {
+                    ChessGameMgr.EChessTeam ht = (ChessGameMgr.EChessTeam)hostTeam;
+                    chessGameMgr.PlayTurn(move, (ht == ChessGameMgr.EChessTeam.White) ? ChessGameMgr.EChessTeam.Black : ChessGameMgr.EChessTeam.White);
+                    shouldUpdateScreen = true;
+                }
+                break;
+
+            default:
+                Debug.Log("Could not convert " + value.ToString());
+                break;
+        }
+    }
+
 }
 
 public class StateObject

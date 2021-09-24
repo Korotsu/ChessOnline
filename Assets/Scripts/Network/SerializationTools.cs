@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using UnityEngine;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
@@ -46,6 +47,8 @@ namespace SerializationTool
             }
         }
     }
+
+
 
     [Serializable]
     public class Player : ISerializable

@@ -121,55 +121,7 @@ public class ClientScript : MonoBehaviour
 
                 if (read != StateObject.BUFFER_SIZE)
                 {
-                    if (!teamSelected && player)
-                    {
-                        try
-                        {
-                            player.team = (ChessGameMgr.EChessTeam) SerializationTools.Deserialize(stateObject.buffer);
-                        }
-                        finally
-                        {
-                            teamSelected = false;
-                        }
-                    }
-
-                    else
-                    {
-                        ChessGameMgr.Move move = new ChessGameMgr.Move();
-
-                        try
-                        {
-                            move = (ChessGameMgr.Move)SerializationTools.Deserialize(stateObject.buffer);
-                        }
-                        finally
-                        {
-                            if (chessGameMgr && player)
-                            {
-                                chessGameMgr.PlayTurn(move, (player.team == ChessGameMgr.EChessTeam.White) ? ChessGameMgr.EChessTeam.Black : ChessGameMgr.EChessTeam.White);
-
-                                shouldUpdateScreen = true;
-                            }
-                        }
-
-                    }
-
-                    /*string str;
-
-                    try
-                    {
-                        str = (string)SerializationTools.Deserialize(stateObject.buffer);
-                    }
-                    finally
-                    {
-                        if (str != null)
-                        {
-                            //strContent = stateObject.stringBuilder.ToString();
-                            Console.WriteLine(String.Format("Read {0} byte from socket" +
-                                         "data = {1} ", stateObject.buffer.Length, str));
-                        }
-                    }*/
-
-
+                    checkConvertProcess(stateObject.buffer);
                 }
 
                 s.BeginReceive(stateObject.buffer, 0, StateObject.BUFFER_SIZE, 0,
@@ -198,6 +150,35 @@ public class ClientScript : MonoBehaviour
             shouldUpdateScreen = false;
 
             chessGameMgr.UpdatePieces();
+        }
+    }
+
+    private void checkConvertProcess(byte[] buffer)
+    {
+        var value = SerializationTools.Deserialize(buffer);
+
+        switch (value)
+        {
+            case ChessGameMgr.Move move:
+                if (chessGameMgr && player)
+                {
+                    chessGameMgr.PlayTurn(move, (player.team == ChessGameMgr.EChessTeam.White) ? ChessGameMgr.EChessTeam.Black : ChessGameMgr.EChessTeam.White);
+
+                    shouldUpdateScreen = true;
+                }
+                break;
+
+            case ChessGameMgr.EChessTeam team:
+                if (player && !teamSelected)
+                {
+                    teamSelected = true;
+                    player.team = team;
+                }
+                break;
+
+            default:
+                Debug.Log("Could not convert " + value.ToString());
+                break;
         }
     }
 }
