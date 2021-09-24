@@ -6,15 +6,15 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    [System.NonSerialized] public PlayerData playerData = new PlayerData(); 
+    [HideInInspector] public PlayerData playerData = new PlayerData(); 
 }
 
 [Serializable]
 public class PlayerData : ISerializable
 {
-    [System.NonSerialized] public string username = "Guest";
-    [System.NonSerialized] public ChessGameMgr.EChessTeam team = ChessGameMgr.EChessTeam.None;
-    [System.NonSerialized] public bool isHost = true;
+    public string username = "Guest";   
+    public ChessGameMgr.EChessTeam team = ChessGameMgr.EChessTeam.None;
+    public bool isHost = true;
 
     public PlayerData() { }
 

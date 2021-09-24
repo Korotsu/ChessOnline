@@ -212,13 +212,13 @@ public class ServerClientScript : MonoBehaviour
 
                 //stateObject.stringBuilder.Append(Encoding.ASCII.GetString(stateObject.buffer, 0, read));  
 
-                if (read != StateObject.BUFFER_SIZE)
+                if (read <= StateObject.BUFFER_SIZE)
                 {
                     checkConvertProcess(stateObject.buffer);
 
+                }
                     s.BeginReceive(stateObject.buffer, 0, StateObject.BUFFER_SIZE, 0,
                                          new AsyncCallback(ReceiveCallBack), stateObject);
-                }
             }
             else
             {
@@ -252,6 +252,7 @@ public class ServerClientScript : MonoBehaviour
 
             case PlayerData player:
                 player2.playerData = player;
+                
                 break;
 
             default:
