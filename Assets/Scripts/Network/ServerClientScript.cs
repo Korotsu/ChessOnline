@@ -18,7 +18,6 @@ public class ServerClientScript : MonoBehaviour
     private     int                 nbPlayer            = 0;
     private     bool                initialized         = false;
     private     int                 hostTeam            = 2;
-    private     bool                shouldUpdateScreen  = false;
     private     bool                shouldPlayTurn      = false;
     private     ChessGameMgr.Move   lastClientMove      = new ChessGameMgr.Move();
 
@@ -156,18 +155,14 @@ public class ServerClientScript : MonoBehaviour
             GetComponent<Player>().team = (ChessGameMgr.EChessTeam) hostTeam;
         }
 
-        if (shouldUpdateScreen)
-        {
-            shouldUpdateScreen = false;
-            chessGameMgr.UpdatePieces();
-        }
-
         if (shouldPlayTurn)
         {
             shouldPlayTurn = false;
             ChessGameMgr.EChessTeam ht = (ChessGameMgr.EChessTeam)hostTeam;
             chessGameMgr.PlayTurn(lastClientMove, (ht == ChessGameMgr.EChessTeam.White) ? ChessGameMgr.EChessTeam.Black : ChessGameMgr.EChessTeam.White);
+            chessGameMgr.UpdatePieces();
         }
+        
     }
 
     public void AcceptCallBack(IAsyncResult result)
@@ -251,7 +246,6 @@ public class ServerClientScript : MonoBehaviour
                 {
                     lastClientMove = move;
                     shouldPlayTurn = true;
-                    shouldUpdateScreen = true;
                 }
                 break;
 

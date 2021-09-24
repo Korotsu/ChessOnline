@@ -15,7 +15,6 @@ public class ClientScript : MonoBehaviour
     public ChessGameMgr chessGameMgr            = null;
     private bool teamSelected                   = false;
     [SerializeField] private Player player      = null;
-    private bool shouldUpdateScreen             = false;
     private bool shouldPlayTurn                 = false;
     private ChessGameMgr.Move lastServerMove    = new ChessGameMgr.Move();
 
@@ -147,19 +146,12 @@ public class ClientScript : MonoBehaviour
 
     private void Update()
     {
-        if (shouldUpdateScreen)
-        {
-            shouldUpdateScreen = false;
-
-            chessGameMgr.UpdatePieces();
-        }
-
         if (shouldPlayTurn)
         {
             shouldPlayTurn = false;
 
             chessGameMgr.PlayTurn(lastServerMove, (player.team == ChessGameMgr.EChessTeam.White) ? ChessGameMgr.EChessTeam.Black : ChessGameMgr.EChessTeam.White);
-
+            chessGameMgr.UpdatePieces();
         }
     }
 
@@ -174,7 +166,6 @@ public class ClientScript : MonoBehaviour
                 {
                     lastServerMove = move;
                     shouldPlayTurn = true;
-                    shouldUpdateScreen = true;
                 }
                 break;
 
