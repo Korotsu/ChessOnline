@@ -159,6 +159,7 @@ public class ServerClientScript : MonoBehaviour
             initialized             = true;
             chessGameMgr.enabled    = true;
             GetComponent<Player>().playerData.team = (ChessGameMgr.EChessTeam) hostTeam;
+            BroadCastData(player2.playerData);
         }
 
         if (shouldPlayTurn)
@@ -205,7 +206,6 @@ public class ServerClientScript : MonoBehaviour
 
             player2.playerData.team = (ChessGameMgr.EChessTeam)(1 - hostTeam);
             player2.playerData.username = player1.playerData.username;
-            SendData(player2.playerData, handler);
 
             handler.BeginReceive(stateObject.buffer, 0, StateObject.BUFFER_SIZE, 0,
                            new AsyncCallback(ReceiveCallBack), stateObject);
