@@ -10,19 +10,17 @@ public class Player : MonoBehaviour
 }
 
 [Serializable]
-public class PlayerData : ISerializable
+public struct PlayerData : ISerializable
 {
-    public string username = "Guest";   
-    public ChessGameMgr.EChessTeam team = ChessGameMgr.EChessTeam.None;
-    public bool isHost = true;
-
-    public PlayerData() { }
+    public string username;   
+    public ChessGameMgr.EChessTeam team;
+    public bool isHost;
 
     public PlayerData(SerializationInfo info, StreamingContext ctxt)
     {
-        username = (string)info.GetValue("username", typeof(string));
         team = (ChessGameMgr.EChessTeam)info.GetValue("team", typeof(ChessGameMgr.EChessTeam));
         isHost = (bool)info.GetValue("isHost", typeof(bool));
+        username = (string)info.GetValue("username", typeof(string));
     }
 
     public void GetObjectData(SerializationInfo info, StreamingContext ctxt)
