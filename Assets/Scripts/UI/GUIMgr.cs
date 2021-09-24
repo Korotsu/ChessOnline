@@ -28,8 +28,8 @@ public class GUIMgr : MonoBehaviour
 
     Text playerTurnText = null;
 
-    [SerializeField] public Player player1 = null;
-    [SerializeField] public Player player2 = null;
+    [SerializeField] static public Player player1 = null;
+    [SerializeField] static public Player player2 = null;
 
     // Use this for initialization
     void Awake()

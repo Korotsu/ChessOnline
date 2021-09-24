@@ -249,6 +249,10 @@ public class ServerClientScript : MonoBehaviour
                 }
                 break;
 
+            case Player player:
+                GUIMgr.player2 = player;
+                break;
+
             default:
                 Debug.Log("Could not convert " + value.ToString());
                 break;
