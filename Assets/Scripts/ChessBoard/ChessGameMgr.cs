@@ -140,8 +140,8 @@ public partial class ChessGameMgr : MonoBehaviour
     EChessTeam teamTurn;
 
     List<uint> scores;
-    uint player1Score = 0;
-    uint player2Score = 0;
+    [System.NonSerialized] public uint player1Score = 0;
+    [System.NonSerialized] public uint player2Score = 0;
 
     public delegate void PlayerTurnEvent(bool isWhiteMove);
     public event PlayerTurnEvent OnPlayerTurn = null;

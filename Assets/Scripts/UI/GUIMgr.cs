@@ -30,6 +30,16 @@ public class GUIMgr : MonoBehaviour
 
     [SerializeField] public Player player1 = null;
     [SerializeField] public Player player2 = null;
+    [System.NonSerialized] public bool shouldUpdateUI = false;
+    private void Update()
+    {
+        if (shouldUpdateUI)
+        {
+            player1ScoreText.text = string.Format(player1.playerData.username + " : {0}", ChessGameMgr.Instance.player1Score);
+            player2ScoreText.text = string.Format(player2.playerData.username + " : {0}", ChessGameMgr.Instance.player2Score);
+            shouldUpdateUI = false;
+        }
+    }
 
     // Use this for initialization
     void Awake()
