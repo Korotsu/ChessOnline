@@ -5,26 +5,30 @@ using System.Runtime.Serialization;
 using UnityEngine;
 
 [Serializable]
-public class Player : MonoBehaviour, ISerializable
+public class Player : MonoBehaviour
+{
+    [System.NonSerialized] public PlayerData playerData = new PlayerData(); 
+}
+
+public class PlayerData : ISerializable
 {
     [System.NonSerialized] public string username = "Guest";
-    [SerializeField] public ChessGameMgr.EChessTeam team = ChessGameMgr.EChessTeam.None;
-
+    [System.NonSerialized] public ChessGameMgr.EChessTeam team = ChessGameMgr.EChessTeam.None;
     [System.NonSerialized] public bool isHost = true;
 
-    public Player() {}
+    public PlayerData() { }
 
-    public Player(SerializationInfo info, StreamingContext ctxt)
+    public PlayerData(SerializationInfo info, StreamingContext ctxt)
     {
-        username    = (string)                  info.GetValue("username", typeof(string));
-        team        = (ChessGameMgr.EChessTeam) info.GetValue("team"    , typeof(ChessGameMgr.EChessTeam));
-        isHost      = (bool)                    info.GetValue("isHost"  , typeof(bool));
+        username = (string)info.GetValue("username", typeof(string));
+        team = (ChessGameMgr.EChessTeam)info.GetValue("team", typeof(ChessGameMgr.EChessTeam));
+        isHost = (bool)info.GetValue("isHost", typeof(bool));
     }
 
     public void GetObjectData(SerializationInfo info, StreamingContext ctxt)
     {
-        info.AddValue("username"    , typeof(string));
-        info.AddValue("team"        , typeof(ChessGameMgr.EChessTeam));
-        info.AddValue("isHost"      , typeof(bool));
+        info.AddValue("username", typeof(string));
+        info.AddValue("team", typeof(ChessGameMgr.EChessTeam));
+        info.AddValue("isHost", typeof(bool));
     }
 }

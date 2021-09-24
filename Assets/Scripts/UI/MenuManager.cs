@@ -31,12 +31,12 @@ public class MenuManager : MonoBehaviour
             return;
 
         Debug.Log("Host game pressed.");
-        player.username = username.text;
+        player.playerData.username = username.text;
         //chessGameManager.SetActive(true);
         scoreCanvas.SetActive(true);
         GetComponent<Canvas>().enabled = false;
         player.gameObject.GetComponent<ServerClientScript>().enabled = true;
-        player.isHost = true;
+        player.playerData.isHost = true;
         player.gameObject.GetComponent<ServerClientScript>().BroadCastData(player);
     }
 
@@ -46,12 +46,12 @@ public class MenuManager : MonoBehaviour
             return;
 
         Debug.Log("Join game pressed.");
-        player.username = username.text;
+        player.playerData.username = username.text;
         joinMenu.SetActive(true);
         gameObject.SetActive(false);
-        player.isHost = false;
+        player.playerData.isHost = false;
 
-        player.gameObject.GetComponent<ClientScript>().SendData(player);
+        player.gameObject.GetComponent<ClientScript>().SendData(player.playerData);
     }
     private void OnQuit()
     {

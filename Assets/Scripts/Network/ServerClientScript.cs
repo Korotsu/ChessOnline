@@ -153,7 +153,7 @@ public class ServerClientScript : MonoBehaviour
         {
             initialized             = true;
             chessGameMgr.enabled    = true;
-            GetComponent<Player>().team = (ChessGameMgr.EChessTeam) hostTeam;
+            GetComponent<Player>().playerData.team = (ChessGameMgr.EChessTeam) hostTeam;
         }
 
         if (shouldPlayTurn)
@@ -250,8 +250,8 @@ public class ServerClientScript : MonoBehaviour
                 }
                 break;
 
-            case Player player:
-                player2 = player;
+            case PlayerData player:
+                player2.playerData = player;
                 break;
 
             default:

@@ -151,7 +151,7 @@ public class ClientScript : MonoBehaviour
         {
             shouldPlayTurn = false;
 
-            chessGameMgr.PlayTurn(lastServerMove, (player.team == ChessGameMgr.EChessTeam.White) ? ChessGameMgr.EChessTeam.Black : ChessGameMgr.EChessTeam.White);
+            chessGameMgr.PlayTurn(lastServerMove, (player.playerData.team == ChessGameMgr.EChessTeam.White) ? ChessGameMgr.EChessTeam.Black : ChessGameMgr.EChessTeam.White);
             chessGameMgr.UpdatePieces();
         }
     }
@@ -174,12 +174,12 @@ public class ClientScript : MonoBehaviour
                 if (player && !teamSelected)
                 {
                     teamSelected = true;
-                    player.team = team;
+                    player.playerData.team = team;
                 }
                 break;
 
-            case Player player:
-                player2 = player;
+            case PlayerData player:
+                player2.playerData = player;
                 break;
 
             default:

@@ -20,7 +20,7 @@ public class CameraLookAt : MonoBehaviour
     {
         Vector3 position = transform.position;
         position.y = height;
-        if (player && player.team == ChessGameMgr.EChessTeam.White)
+        if (player && player.playerData.team == ChessGameMgr.EChessTeam.White)
             position.z = zPosition;
         else
             position.z = -zPosition;

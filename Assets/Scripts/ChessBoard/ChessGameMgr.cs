@@ -187,7 +187,7 @@ public partial class ChessGameMgr : MonoBehaviour
             if (boardState.DoesTeamLose(otherTeam))
             {
                 // increase score and reset board
-                if (teamTurn == player.team)
+                if (teamTurn == player.playerData.team)
                     player1Score++;
                 else
                     player2Score++;
@@ -207,17 +207,17 @@ public partial class ChessGameMgr : MonoBehaviour
             }
             // raise event
             if (OnPlayerTurn != null)
-                OnPlayerTurn(teamTurn == player.team);
+                OnPlayerTurn(teamTurn == player.playerData.team);
         }
     }
 
     public void CheckOnlineState(Move move)
     {
-        PlayTurn(move,player.team);
+        PlayTurn(move,player.playerData.team);
 
         UpdatePieces();
 
-        if (player.isHost == true)
+        if (player.playerData.isHost == true)
         {
             player.gameObject.GetComponent<ServerClientScript>().BroadCastData(move);    
         }
@@ -240,7 +240,7 @@ public partial class ChessGameMgr : MonoBehaviour
 
     public bool IsPlayerTurn()
     {
-        return teamTurn == player.team;
+        return teamTurn == player.playerData.team;
     }
 
     public BoardSquare GetSquare(int pos)
@@ -305,14 +305,14 @@ public partial class ChessGameMgr : MonoBehaviour
 
 
         if (OnPlayerTurn != null)
-            OnPlayerTurn(teamTurn == player.team);
+            OnPlayerTurn(teamTurn == player.playerData.team);
         if (OnScoreUpdated != null)
             OnScoreUpdated(scores[0], scores[1]);
     }
 
     void Update()
     {
-       if(teamTurn == player.team)
+       if(teamTurn == player.playerData.team)
             UpdatePlayerTurn();
     }
     #endregion

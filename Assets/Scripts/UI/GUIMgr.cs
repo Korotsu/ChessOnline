@@ -51,14 +51,14 @@ public class GUIMgr : MonoBehaviour
     {
         playerTurnTr.gameObject.SetActive(true);
         if(isPlayerMove)
-            playerTurnText.text = player1.username + " Turn.";
+            playerTurnText.text = player1.playerData.username + " Turn.";
         else
-            playerTurnText.text = player2.username + " Turn.";
+            playerTurnText.text = player2.playerData.username + " Turn.";
     }
 
     void UpdateScore(uint player1Score, uint player2Score)
     {
-        player1ScoreText.text = string.Format(player1.username + " : {0}", player1Score);
-        player2ScoreText.text = string.Format(player2.username + " : {0}", player2Score);
+        player1ScoreText.text = string.Format(player1.playerData.username + " : {0}", player1Score);
+        player2ScoreText.text = string.Format(player2.playerData.username + " : {0}", player2Score);
     }
 }
