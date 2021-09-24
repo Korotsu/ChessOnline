@@ -8,9 +8,11 @@ using UnityEngine;
 public class Player : MonoBehaviour, ISerializable
 {
     [System.NonSerialized] public string username = "Guest";
-    [SerializeField] public ChessGameMgr.EChessTeam team;
+    [SerializeField] public ChessGameMgr.EChessTeam team = ChessGameMgr.EChessTeam.None;
 
     [System.NonSerialized] public bool isHost = true;
+
+    public Player() {}
 
     public Player(SerializationInfo info, StreamingContext ctxt)
     {

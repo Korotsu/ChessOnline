@@ -10,13 +10,14 @@ using SerializationTool;
 public class ClientScript : MonoBehaviour
 {
     Socket socket;
-    int port                                    = 11000;
-    public bool connected                       = false;
-    public ChessGameMgr chessGameMgr            = null;
-    private bool teamSelected                   = false;
-    private Player player                       = GUIMgr.player1;
-    private bool shouldPlayTurn                 = false;
-    private ChessGameMgr.Move lastServerMove    = new ChessGameMgr.Move();
+    int                         port            = 11000;
+    public bool                 connected       = false;
+    public ChessGameMgr         chessGameMgr    = null;
+    private bool                teamSelected    = false;
+    private Player              player          = null;
+    private bool                shouldPlayTurn  = false;
+    private ChessGameMgr.Move   lastServerMove  = new ChessGameMgr.Move();
+    private Player              player2         = null;
 
     public void Connect(string hostIPAddress)
     {
@@ -178,7 +179,7 @@ public class ClientScript : MonoBehaviour
                 break;
 
             case Player player:
-                GUIMgr.player2 = player;
+                player2 = player;
                 break;
 
             default:

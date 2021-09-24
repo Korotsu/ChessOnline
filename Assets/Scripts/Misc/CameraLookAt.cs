@@ -14,14 +14,13 @@ public class CameraLookAt : MonoBehaviour
     private float zPosition = 12f;
     [SerializeField]
     private float height = 32f;
-
-    private Player player = GUIMgr.player1;
-
+    [SerializeField] 
+    private Player player = null;
     void Update ()
     {
         Vector3 position = transform.position;
         position.y = height;
-        if (player.team == ChessGameMgr.EChessTeam.White)
+        if (player && player.team == ChessGameMgr.EChessTeam.White)
             position.z = zPosition;
         else
             position.z = -zPosition;

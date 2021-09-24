@@ -20,6 +20,7 @@ public class ServerClientScript : MonoBehaviour
     private     int                 hostTeam            = 2;
     private     bool                shouldPlayTurn      = false;
     private     ChessGameMgr.Move   lastClientMove      = new ChessGameMgr.Move();
+    private     Player              player2             = null;
 
     // Start is called before the first frame update
     void Start()
@@ -250,7 +251,7 @@ public class ServerClientScript : MonoBehaviour
                 break;
 
             case Player player:
-                GUIMgr.player2 = player;
+                player2 = player;
                 break;
 
             default:

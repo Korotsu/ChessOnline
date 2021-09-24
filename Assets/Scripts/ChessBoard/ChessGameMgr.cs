@@ -28,7 +28,7 @@ public partial class ChessGameMgr : MonoBehaviour
 
     //[SerializeField]
     //private bool IsAIEnabled = false;
-    private Player player = GUIMgr.player1;
+    [SerializeField] private Player player = null;
     private ChessAI chessAI = null;
     private Transform boardTransform = null;
     private static int BOARD_SIZE = 8;
@@ -301,6 +301,8 @@ public partial class ChessGameMgr : MonoBehaviour
         teamPiecesArray[1] = null;
 
         CreatePieces();
+
+
 
         if (OnPlayerTurn != null)
             OnPlayerTurn(teamTurn == player.team);
