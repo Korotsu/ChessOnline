@@ -10,14 +10,16 @@ using SerializationTool;
 public class ClientScript : MonoBehaviour
 {
     Socket socket;
-    int                         port            = 11000;
-    public bool                 connected       = false;
-    public ChessGameMgr         chessGameMgr    = null;
-    private bool                teamSelected    = false;
-    private Player              player          = null;
-    private bool                shouldPlayTurn  = false;
-    private ChessGameMgr.Move   lastServerMove  = new ChessGameMgr.Move();
-    private Player              player2         = null;
+    int                         port                    = 11000;
+    public bool                 connected               = false;
+    public ChessGameMgr         chessGameMgr            = null;
+    private bool                teamSelected            = false;
+    private Player              player                  = null;
+    private bool                shouldPlayTurn          = false;
+    private ChessGameMgr.Move   lastServerMove          = new ChessGameMgr.Move();
+    private Player              player2                 = null;
+    private bool                shouldProcessDataBuffer = false;
+    private List<byte[]>        dataBufferList          = new List<byte[]>();
 
     public void Connect(string hostIPAddress)
     {
@@ -123,7 +125,8 @@ public class ClientScript : MonoBehaviour
 
                 if (read != StateObject.BUFFER_SIZE)
                 {
-                    checkConvertProcess(stateObject.buffer);
+                    dataBufferList.Add(stateObject.buffer);
+                    shouldProcessDataBuffer = true;
                 }
 
                 s.BeginReceive(stateObject.buffer, 0, StateObject.BUFFER_SIZE, 0,
@@ -153,6 +156,17 @@ public class ClientScript : MonoBehaviour
 
             chessGameMgr.PlayTurn(lastServerMove, (player.playerData.team == ChessGameMgr.EChessTeam.White) ? ChessGameMgr.EChessTeam.Black : ChessGameMgr.EChessTeam.White);
             chessGameMgr.UpdatePieces();
+        }
+
+        if (shouldProcessDataBuffer)
+        {
+            shouldProcessDataBuffer = false;
+
+            foreach (byte[] buffer in dataBufferList)
+            {
+                checkConvertProcess(buffer);
+            }
+            dataBufferList.Clear();
         }
     }
 

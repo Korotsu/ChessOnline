@@ -11,16 +11,18 @@ public class ServerClientScript : MonoBehaviour
 {
     private     Socket              socket;
     private     IPEndPoint          localEP;
-    private     int                 port                = 11000;
-    private     List<Socket>        clientSocketList    = new List<Socket>();
-    private     bool                connected           = false;
-    public      ChessGameMgr        chessGameMgr        = null;
-    private     int                 nbPlayer            = 0;
-    private     bool                initialized         = false;
-    private     int                 hostTeam            = 2;
-    private     bool                shouldPlayTurn      = false;
-    private     ChessGameMgr.Move   lastClientMove      = new ChessGameMgr.Move();
-    private     Player              player2             = null;
+    private     int                 port                    = 11000;
+    private     List<Socket>        clientSocketList        = new List<Socket>();
+    private     bool                connected               = false;
+    public      ChessGameMgr        chessGameMgr            = null;
+    private     int                 nbPlayer                = 0;
+    private     bool                initialized             = false;
+    private     int                 hostTeam                = 2;
+    private     bool                shouldPlayTurn          = false;
+    private     ChessGameMgr.Move   lastClientMove          = new ChessGameMgr.Move();
+    private     Player              player2                 = null;
+    private     bool                shouldProcessDataBuffer = false;
+    private     List<byte[]>        dataBufferList          = new List<byte[]>();
 
     // Start is called before the first frame update
     void Start()
@@ -163,6 +165,17 @@ public class ServerClientScript : MonoBehaviour
             chessGameMgr.PlayTurn(lastClientMove, (ht == ChessGameMgr.EChessTeam.White) ? ChessGameMgr.EChessTeam.Black : ChessGameMgr.EChessTeam.White);
             chessGameMgr.UpdatePieces();
         }
+
+        if (shouldProcessDataBuffer)
+        {
+            shouldProcessDataBuffer = false;
+
+            foreach (byte[] buffer in dataBufferList)
+            {
+                checkConvertProcess(buffer);
+            }
+            dataBufferList.Clear();
+        }
         
     }
 
@@ -214,7 +227,8 @@ public class ServerClientScript : MonoBehaviour
 
                 if (read <= StateObject.BUFFER_SIZE)
                 {
-                    checkConvertProcess(stateObject.buffer);
+                    dataBufferList.Add(stateObject.buffer);
+                    shouldProcessDataBuffer = true;
 
                 }
                     s.BeginReceive(stateObject.buffer, 0, StateObject.BUFFER_SIZE, 0,
