@@ -29,6 +29,7 @@ public class JoinMenu : MonoBehaviour
         if (cs.enabled)
         {
             cs.Connect(serverIPAdress.text);
+            player.gameObject.GetComponent<ClientScript>().SendData(player.playerData);
         }
 
         else

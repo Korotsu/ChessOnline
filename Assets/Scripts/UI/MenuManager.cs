@@ -50,8 +50,6 @@ public class MenuManager : MonoBehaviour
         joinMenu.SetActive(true);
         gameObject.SetActive(false);
         player.playerData.isHost = false;
-
-        player.gameObject.GetComponent<ClientScript>().SendData(player.playerData);
     }
     private void OnQuit()
     {
