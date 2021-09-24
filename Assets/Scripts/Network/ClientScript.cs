@@ -10,12 +10,14 @@ using SerializationTool;
 public class ClientScript : MonoBehaviour
 {
     Socket socket;
-    int port = 11000;
-    public bool connected = false;
-    public ChessGameMgr chessGameMgr = null;
-    private bool teamSelected = false;
-    [SerializeField] private Player player = null;
-    private bool shouldUpdateScreen = false;
+    int port                                    = 11000;
+    public bool connected                       = false;
+    public ChessGameMgr chessGameMgr            = null;
+    private bool teamSelected                   = false;
+    [SerializeField] private Player player      = null;
+    private bool shouldUpdateScreen             = false;
+    private bool shouldPlayTurn                 = false;
+    private ChessGameMgr.Move lastServerMove    = new ChessGameMgr.Move();
 
     public void Connect(string hostIPAddress)
     {
@@ -151,6 +153,14 @@ public class ClientScript : MonoBehaviour
 
             chessGameMgr.UpdatePieces();
         }
+
+        if (shouldPlayTurn)
+        {
+            shouldPlayTurn = false;
+
+            chessGameMgr.PlayTurn(lastServerMove, (player.team == ChessGameMgr.EChessTeam.White) ? ChessGameMgr.EChessTeam.Black : ChessGameMgr.EChessTeam.White);
+
+        }
     }
 
     private void checkConvertProcess(byte[] buffer)
@@ -162,8 +172,8 @@ public class ClientScript : MonoBehaviour
             case ChessGameMgr.Move move:
                 if (chessGameMgr && player)
                 {
-                    chessGameMgr.PlayTurn(move, (player.team == ChessGameMgr.EChessTeam.White) ? ChessGameMgr.EChessTeam.Black : ChessGameMgr.EChessTeam.White);
-
+                    lastServerMove = move;
+                    shouldPlayTurn = true;
                     shouldUpdateScreen = true;
                 }
                 break;

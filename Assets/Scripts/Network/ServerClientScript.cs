@@ -9,16 +9,18 @@ using SerializationTool;
 
 public class ServerClientScript : MonoBehaviour
 {
-    private     Socket          socket;
-    private     IPEndPoint      localEP;
-    private     int             port                = 11000;
-    private     List<Socket>    clientSocketList    = new List<Socket>();
-    private     bool            connected           = false;
-    public      ChessGameMgr    chessGameMgr        = null;
-    private     int             nbPlayer            = 0;
-    private     bool            initialized         = false;
-    private     int             hostTeam            = 2;
-    private     bool            shouldUpdateScreen  = false;
+    private     Socket              socket;
+    private     IPEndPoint          localEP;
+    private     int                 port                = 11000;
+    private     List<Socket>        clientSocketList    = new List<Socket>();
+    private     bool                connected           = false;
+    public      ChessGameMgr        chessGameMgr        = null;
+    private     int                 nbPlayer            = 0;
+    private     bool                initialized         = false;
+    private     int                 hostTeam            = 2;
+    private     bool                shouldUpdateScreen  = false;
+    private     bool                shouldPlayTurn      = false;
+    private     ChessGameMgr.Move   lastClientMove      = new ChessGameMgr.Move();
 
     // Start is called before the first frame update
     void Start()
@@ -159,6 +161,13 @@ public class ServerClientScript : MonoBehaviour
             shouldUpdateScreen = false;
             chessGameMgr.UpdatePieces();
         }
+
+        if (shouldPlayTurn)
+        {
+            shouldPlayTurn = false;
+            ChessGameMgr.EChessTeam ht = (ChessGameMgr.EChessTeam)hostTeam;
+            chessGameMgr.PlayTurn(lastClientMove, (ht == ChessGameMgr.EChessTeam.White) ? ChessGameMgr.EChessTeam.Black : ChessGameMgr.EChessTeam.White);
+        }
     }
 
     public void AcceptCallBack(IAsyncResult result)
@@ -240,8 +249,8 @@ public class ServerClientScript : MonoBehaviour
             case ChessGameMgr.Move move:
                 if (chessGameMgr)
                 {
-                    ChessGameMgr.EChessTeam ht = (ChessGameMgr.EChessTeam)hostTeam;
-                    chessGameMgr.PlayTurn(move, (ht == ChessGameMgr.EChessTeam.White) ? ChessGameMgr.EChessTeam.Black : ChessGameMgr.EChessTeam.White);
+                    lastClientMove = move;
+                    shouldPlayTurn = true;
                     shouldUpdateScreen = true;
                 }
                 break;
