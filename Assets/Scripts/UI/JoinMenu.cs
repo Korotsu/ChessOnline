@@ -29,7 +29,6 @@ public class JoinMenu : MonoBehaviour
         if (cs.enabled)
         {
             cs.Connect(serverIPAdress.text);
-            player.gameObject.GetComponent<ClientScript>().SendData(player.playerData);
         }
 
         else
@@ -39,6 +38,7 @@ public class JoinMenu : MonoBehaviour
         
         if (cs.connected)
         {
+            cs.SendData(player.playerData);
             chessGameManager.enabled = true;
             scoreCanvas.SetActive(true);
             GetComponent<Canvas>().enabled = false;
