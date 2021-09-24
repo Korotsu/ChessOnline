@@ -24,6 +24,7 @@ public class ServerClientScript : MonoBehaviour
     private     List<byte[]>        dataBufferList          = new List<byte[]>();
 
     [SerializeField]        private GUIMgr guiMgr           = null;
+    [SerializeField]        private Player player1          = null;
     [SerializeField]        private Player player2          = null;
 
     // Start is called before the first frame update
@@ -202,7 +203,9 @@ public class ServerClientScript : MonoBehaviour
             hostTeam = rand.Next(0, 2);
             int clientTeam = 1 - hostTeam;
 
-            SendData(clientTeam, handler);
+            player2.playerData.team = (ChessGameMgr.EChessTeam)1 - hostTeam;
+            player2.playerData.username = player1.playerData.username;
+            SendData(player2.playerData, handler);
 
             handler.BeginReceive(stateObject.buffer, 0, StateObject.BUFFER_SIZE, 0,
                            new AsyncCallback(ReceiveCallBack), stateObject);

@@ -194,9 +194,11 @@ public class ClientScript : MonoBehaviour
                 }
                 break;
 
-            case PlayerData player:
-                player2.playerData = player;
-                guiMgr.shouldUpdateUI = true;
+            case PlayerData player_:
+                player2.playerData.username = player_.username;
+                player.playerData.team      = player_.team;
+                guiMgr.shouldUpdateUI       = true;
+                teamSelected = true;
                 break;
 
             default:
