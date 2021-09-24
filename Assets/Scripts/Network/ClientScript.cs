@@ -11,7 +11,7 @@ public class ClientScript : MonoBehaviour
 {
     Socket socket;
     int                         port                    = 11000;
-    public bool                 connected               = false;
+    [System.NonSerialized] public bool                 connected               = false;
     public ChessGameMgr         chessGameMgr            = null;
     private bool                teamSelected            = false;
     private bool                shouldPlayTurn          = false;
@@ -19,8 +19,9 @@ public class ClientScript : MonoBehaviour
     private bool                shouldProcessDataBuffer = false;
     private List<byte[]>        dataBufferList          = new List<byte[]>();
     
-    [SerializeField]    private Player player           = null;
-    [SerializeField]    private Player player2          = null;
+    [SerializeField]        private GUIMgr guiMgr       = null;
+    [SerializeField]        private Player player       = null;
+    [SerializeField]        private Player player2      = null;
 
     public void Connect(string hostIPAddress)
     {
@@ -195,6 +196,7 @@ public class ClientScript : MonoBehaviour
 
             case PlayerData player:
                 player2.playerData = player;
+                guiMgr.shouldUpdateUI = true;
                 break;
 
             default:

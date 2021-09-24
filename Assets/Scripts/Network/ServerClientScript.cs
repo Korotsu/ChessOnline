@@ -23,7 +23,8 @@ public class ServerClientScript : MonoBehaviour
     private     bool                shouldProcessDataBuffer = false;
     private     List<byte[]>        dataBufferList          = new List<byte[]>();
 
-    [SerializeField] private Player player2                 = null;
+    [SerializeField]        private GUIMgr guiMgr           = null;
+    [SerializeField]        private Player player2          = null;
 
     // Start is called before the first frame update
     void Start()
@@ -267,7 +268,7 @@ public class ServerClientScript : MonoBehaviour
 
             case PlayerData player:
                 player2.playerData = player;
-                
+                guiMgr.shouldUpdateUI = true;
                 break;
 
             default:
