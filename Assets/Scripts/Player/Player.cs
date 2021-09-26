@@ -8,6 +8,7 @@ public class Player : MonoBehaviour
 {
     [HideInInspector] public PlayerData playerData = new PlayerData();
     [SerializeField] private GameObject chatBox = null;
+    [SerializeField] private GameObject inputField = null;
     [SerializeField] private float ocCooldown = 0;
     private float lastTimeSinceOC = 0;
 
@@ -18,7 +19,7 @@ public class Player : MonoBehaviour
             Application.Quit();
         }
 
-        if (Input.GetButton("Open/CloseChat") && Time.realtimeSinceStartup - lastTimeSinceOC >= ocCooldown)
+        if (Input.GetButton("Open/CloseChat") && Time.realtimeSinceStartup - lastTimeSinceOC >= ocCooldown && !inputField.activeSelf)
         {
             if (chatBox.activeSelf)
             {
@@ -53,5 +54,23 @@ public struct PlayerData : ISerializable
         info.AddValue("username", username, typeof(string));
         info.AddValue("team", team, typeof(ChessGameMgr.EChessTeam));
         info.AddValue("isHost", isHost, typeof(bool));
+    }
+}
+
+[Serializable]
+public struct PlayerMessage : ISerializable
+{
+    public string username;
+    public string message;
+    public PlayerMessage(SerializationInfo info, StreamingContext ctxt)
+    {
+        username = (string)info.GetValue("username", typeof(string));
+        message = (string)info.GetValue("message", typeof(string));
+    }
+
+    public void GetObjectData(SerializationInfo info, StreamingContext ctxt)
+    {
+        info.AddValue("username", username, typeof(string));
+        info.AddValue("message", message, typeof(string));
     }
 }

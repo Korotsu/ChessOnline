@@ -269,8 +269,8 @@ public class ServerClientScript : MonoBehaviour
                 ClientConnected(player);
                 break;
 
-            case string text:
-                chat.AddText(player1.playerData.username + ": " + text);
+            case PlayerMessage pm:
+                chat.AddText(pm.username + ": " + pm.message);
                 break;
 
             default:
