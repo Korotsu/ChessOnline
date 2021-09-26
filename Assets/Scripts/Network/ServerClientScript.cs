@@ -29,6 +29,8 @@ public class ServerClientScript : MonoBehaviour
     [SerializeField] private Player player2 = null;
     [SerializeField] private GameObject scoreCanvas = null;
     [SerializeField] private GameObject hostCanvas = null;
+    [SerializeField] private GameObject chatBox = null;
+    [SerializeField] private ChatScript chat = null;
 
     #endregion
 
@@ -211,6 +213,8 @@ public class ServerClientScript : MonoBehaviour
         player2.playerData.username = player.username;
         hostCanvas.transform.GetChild(0).gameObject.SetActive(false);
         hostCanvas.transform.GetChild(1).gameObject.SetActive(true);
+
+        chatBox.SetActive(true);
     }
     public void PrepareGame(ChessGameMgr.EChessTeam team)
     {
@@ -263,6 +267,10 @@ public class ServerClientScript : MonoBehaviour
 
             case PlayerData player:
                 ClientConnected(player);
+                break;
+
+            case string text:
+                chat.AddText(player1.playerData.username + ": " + text);
                 break;
 
             default:

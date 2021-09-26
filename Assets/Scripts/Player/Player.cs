@@ -7,12 +7,29 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [HideInInspector] public PlayerData playerData = new PlayerData();
+    [SerializeField] private GameObject chatBox = null;
+    [SerializeField] private float ocCooldown = 0;
+    private float lastTimeSinceOC = 0;
 
     private void Update()
     {
         if (Input.GetButton("Exit"))
         {
             Application.Quit();
+        }
+
+        if (Input.GetButton("Open/CloseChat") && Time.realtimeSinceStartup - lastTimeSinceOC >= ocCooldown)
+        {
+            if (chatBox.activeSelf)
+            {
+                chatBox.SetActive(false);
+            }
+
+            else
+            {
+                chatBox.SetActive(true);
+            }
+            lastTimeSinceOC = Time.realtimeSinceStartup;
         }
     }
 }

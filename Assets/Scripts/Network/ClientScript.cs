@@ -24,6 +24,7 @@ public class ClientScript : MonoBehaviour
     [SerializeField] private ChessGameMgr chessGameManager = null;
     [SerializeField] private GameObject scoreCanvas = null;
     [SerializeField] private GameObject clientCanvas = null;
+    [SerializeField] private ChatScript chat = null;
 
     #endregion
 
@@ -231,6 +232,10 @@ public class ClientScript : MonoBehaviour
 
             case PlayerData hostPlayer:
                 PrepareGame(hostPlayer);
+                break;
+
+            case string text:
+                chat.AddText(player.playerData.username + ": " + text);
                 break;
 
             default:
