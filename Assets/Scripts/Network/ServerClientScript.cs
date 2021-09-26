@@ -18,14 +18,12 @@ public class ServerClientScript : MonoBehaviour
     private bool connected = false;
     public ChessGameMgr chessGameMgr = null;
     private int nbPlayer = 0;
-    private bool initialized = false;
     private ChessGameMgr.EChessTeam hostTeam = ChessGameMgr.EChessTeam.None;
     private bool shouldPlayTurn = false;
     private ChessGameMgr.Move lastClientMove = new ChessGameMgr.Move();
     private bool shouldProcessDataBuffer = false;
     private List<byte[]> dataBufferList = new List<byte[]>();
 
-    [SerializeField] private GUIMgr guiMgr = null;
     [SerializeField] private Player player1 = null;
     [SerializeField] private Player player2 = null;
     [SerializeField] private GameObject scoreCanvas = null;
@@ -63,11 +61,6 @@ public class ServerClientScript : MonoBehaviour
     }
     private void Update()
     {
-        if (connected && nbPlayer == 2 && !initialized)
-        {
-            PrepareGame();
-        }
-
         if (shouldPlayTurn)
         {
             PlayTurn();
@@ -176,7 +169,6 @@ public class ServerClientScript : MonoBehaviour
     {
         if (connected)
         {
-
             StateObject stateObject = (StateObject)result.AsyncState;
 
             Socket s = stateObject.workSocket;
@@ -185,9 +177,6 @@ public class ServerClientScript : MonoBehaviour
 
             if (read > 0)
             {
-
-                //stateObject.stringBuilder.Append(Encoding.ASCII.GetString(stateObject.buffer, 0, read));  
-
                 if (read <= StateObject.BUFFER_SIZE)
                 {
                     dataBufferList.Add(stateObject.buffer);
@@ -215,23 +204,25 @@ public class ServerClientScript : MonoBehaviour
     #endregion
 
     #region Other
-    private void PrepareGame()
+    private void PrepareGame(PlayerData player)
     {
         System.Random rand = new System.Random();
 
         int intHostTeam = rand.Next(0, 2);
         hostTeam = (ChessGameMgr.EChessTeam) intHostTeam; 
 
+        player2.playerData.username = player.username;
         player2.playerData.team = (ChessGameMgr.EChessTeam)(1 - intHostTeam);
-        player2.playerData.username = player1.playerData.username;
-
         GetComponent<Player>().playerData.team = hostTeam;
-        BroadCastData(player2.playerData);
+
+        PlayerData tempData     = player2.playerData;
+        tempData.username       = player1.playerData.username;
+
+        BroadCastData(tempData);
         
         chessGameMgr.enabled = true;
+
         scoreCanvas.SetActive(true);
-        
-        initialized = true;
     }
     private void PlayTurn()
     {
@@ -244,13 +235,13 @@ public class ServerClientScript : MonoBehaviour
     {
         foreach (byte[] buffer in dataBufferList)
         {
-            checkConvertProcess(buffer);
+            CheckConvertProcess(buffer);
         }
         dataBufferList.Clear();
         
         shouldProcessDataBuffer = false;
     }
-    private void checkConvertProcess(byte[] buffer)
+    private void CheckConvertProcess(byte[] buffer)
     {
         var value = SerializationTools.Deserialize(buffer);
 
@@ -265,8 +256,7 @@ public class ServerClientScript : MonoBehaviour
                 break;
 
             case PlayerData player:
-                player2.playerData = player;
-                guiMgr.shouldUpdateUI = true;
+                PrepareGame(player);
                 break;
 
             default:

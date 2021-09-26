@@ -14,15 +14,16 @@ public class ClientScript : MonoBehaviour
     int port = 11000;
     [System.NonSerialized] public bool connected = false;
     public ChessGameMgr chessGameMgr = null;
-    private bool teamSelected = false;
     private bool shouldPlayTurn = false;
     private ChessGameMgr.Move lastServerMove = new ChessGameMgr.Move();
     private bool shouldProcessDataBuffer = false;
     private List<byte[]> dataBufferList = new List<byte[]>();
 
-    [SerializeField] private GUIMgr guiMgr = null;
     [SerializeField] private Player player = null;
     [SerializeField] private Player player2 = null;
+    [SerializeField] private ChessGameMgr chessGameManager = null;
+    [SerializeField] private GameObject scoreCanvas = null;
+
     #endregion
 
     #region MonoBehaviors
@@ -30,21 +31,12 @@ public class ClientScript : MonoBehaviour
     {
         if (shouldPlayTurn)
         {
-            shouldPlayTurn = false;
-
-            chessGameMgr.PlayTurn(lastServerMove, (player.playerData.team == ChessGameMgr.EChessTeam.White) ? ChessGameMgr.EChessTeam.Black : ChessGameMgr.EChessTeam.White);
-            chessGameMgr.UpdatePieces();
+            PlayTurn();
         }
 
         if (shouldProcessDataBuffer)
         {
-            shouldProcessDataBuffer = false;
-
-            foreach (byte[] buffer in dataBufferList)
-            {
-                CheckConvertProcess(buffer);
-            }
-            dataBufferList.Clear();
+            ProcessDataBuffer();
         }
     }
     private void OnDisable()
@@ -182,6 +174,31 @@ public class ClientScript : MonoBehaviour
     #endregion
 
     #region Other
+    private void PrepareGame(PlayerData hostPlayer)
+    {
+        player2.playerData.username = hostPlayer.username;
+        player.playerData.team = hostPlayer.team;
+
+        chessGameManager.enabled = true;
+        scoreCanvas.SetActive(true);
+    }
+    private void PlayTurn()
+    {
+        chessGameMgr.PlayTurn(lastServerMove, (player.playerData.team == ChessGameMgr.EChessTeam.White) ? ChessGameMgr.EChessTeam.Black : ChessGameMgr.EChessTeam.White);
+        chessGameMgr.UpdatePieces();
+
+        shouldPlayTurn = false;
+    }
+    private void ProcessDataBuffer()
+    {
+        foreach (byte[] buffer in dataBufferList)
+        {
+            CheckConvertProcess(buffer);
+        }
+        dataBufferList.Clear();
+
+        shouldProcessDataBuffer = false;
+    }
     private void CheckConvertProcess(byte[] buffer)
     {
         var value = SerializationTools.Deserialize(buffer);
@@ -196,19 +213,8 @@ public class ClientScript : MonoBehaviour
                 }
                 break;
 
-            case ChessGameMgr.EChessTeam team:
-                if (player && !teamSelected)
-                {
-                    teamSelected = true;
-                    player.playerData.team = team;
-                }
-                break;
-
-            case PlayerData player_:
-                player2.playerData.username = player_.username;
-                player.playerData.team = player_.team;
-                guiMgr.shouldUpdateUI = true;
-                teamSelected = true;
+            case PlayerData hostPlayer:
+                PrepareGame(hostPlayer);
                 break;
 
             default:
@@ -216,7 +222,6 @@ public class ClientScript : MonoBehaviour
                 break;
         }
     }
-
     private IPAddress FindIPV4Adress(IPHostEntry host)
     {
         foreach (IPAddress ip in host.AddressList)

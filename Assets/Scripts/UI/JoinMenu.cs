@@ -8,9 +8,6 @@ public class JoinMenu : MonoBehaviour
     [SerializeField] private InputField serverIPAdress = null;
 
     [SerializeField] private GameObject mainMenu = null;
-    [SerializeField] private ChessGameMgr chessGameManager = null;
-    [SerializeField] private GameObject scoreCanvas = null;
-
     [SerializeField] public Player player = null;
     private void Start()
     {
@@ -39,9 +36,6 @@ public class JoinMenu : MonoBehaviour
         if (cs.connected)
         {
             cs.SendData(player.playerData);
-
-            chessGameManager.enabled = true;
-            scoreCanvas.SetActive(true);
             GetComponent<Canvas>().enabled = false;
         }
     }
