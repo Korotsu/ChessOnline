@@ -7,3 +7,6 @@ obj/
 Temp/
 ProjectSettings/SceneTemplateSettings.json
 *.sln
+!Bin/*.exe
+!Bin/*.dll
+!*.dll
