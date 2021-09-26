@@ -44,7 +44,7 @@ public class JoinMenu : MonoBehaviour
             chatBox.SetActive(true);
             clientCanvas.SetActive(true);
             clientCanvas.transform.GetChild(0).gameObject.SetActive(true);
-            GetComponent<Canvas>().enabled = false;
+            gameObject.SetActive(false);
         }
     }
     private void OnBack()
