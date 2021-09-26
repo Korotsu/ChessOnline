@@ -16,8 +16,10 @@ git clone ssh://git@git.isartintra.com:2424/2021/GP_2023_CHESSMULTI/Groupe_04.gi
 
 ## Controls, features
 
-| Key   | Action           |
-|-------|------------------|
-| Esc   | Exit the program |
+| Key    | Action              |
+|--------|---------------------|
+| Esc    | Exit the program    |
+| Return | Send a chat message |
+| T      | Open/Close chat     |
 
 the other controls are mouse buttons and movement;
