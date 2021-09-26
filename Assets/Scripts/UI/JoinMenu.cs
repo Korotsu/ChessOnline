@@ -26,25 +26,24 @@ public class JoinMenu : MonoBehaviour
 
         ClientScript cs = player.gameObject.GetComponent<ClientScript>();
 
-        if (cs.enabled)
+        if (!cs.enabled)
+        {
+            cs.enabled = true;
+        }
+
+        if (!cs.connected)
         {
             cs.Connect(serverIPAdress.text);
         }
 
-        else
-        {
-            cs.enabled = true;
-        }
-        
         if (cs.connected)
         {
             cs.SendData(player.playerData);
+
             chessGameManager.enabled = true;
             scoreCanvas.SetActive(true);
             GetComponent<Canvas>().enabled = false;
         }
-
-
     }
     private void OnBack()
     {

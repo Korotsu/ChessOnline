@@ -33,10 +33,10 @@ public class MenuManager : MonoBehaviour
         Debug.Log("Host game pressed.");
         player.playerData.username = username.text;
         //chessGameManager.SetActive(true);
-        scoreCanvas.SetActive(true);
+        //scoreCanvas.SetActive(true);
         GetComponent<Canvas>().enabled = false;
-        player.gameObject.GetComponent<ServerClientScript>().enabled = true;
         player.playerData.isHost = true;
+        player.gameObject.GetComponent<ServerClientScript>().enabled = true;
     }
 
     private void OnJoinGame()

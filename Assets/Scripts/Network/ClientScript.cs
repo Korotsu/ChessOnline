@@ -9,108 +9,52 @@ using SerializationTool;
 
 public class ClientScript : MonoBehaviour
 {
+    #region Variables
     Socket socket;
-    int                         port                    = 11000;
-    [System.NonSerialized] public bool                 connected               = false;
-    public ChessGameMgr         chessGameMgr            = null;
-    private bool                teamSelected            = false;
-    private bool                shouldPlayTurn          = false;
-    private ChessGameMgr.Move   lastServerMove          = new ChessGameMgr.Move();
-    private bool                shouldProcessDataBuffer = false;
-    private List<byte[]>        dataBufferList          = new List<byte[]>();
-    
-    [SerializeField]        private GUIMgr guiMgr       = null;
-    [SerializeField]        private Player player       = null;
-    [SerializeField]        private Player player2      = null;
+    int port = 11000;
+    [System.NonSerialized] public bool connected = false;
+    public ChessGameMgr chessGameMgr = null;
+    private bool teamSelected = false;
+    private bool shouldPlayTurn = false;
+    private ChessGameMgr.Move lastServerMove = new ChessGameMgr.Move();
+    private bool shouldProcessDataBuffer = false;
+    private List<byte[]> dataBufferList = new List<byte[]>();
 
-    public void Connect(string hostIPAddress)
+    [SerializeField] private GUIMgr guiMgr = null;
+    [SerializeField] private Player player = null;
+    [SerializeField] private Player player2 = null;
+    #endregion
+
+    #region MonoBehaviors
+    private void Update()
     {
-        //create server socket
-        IPHostEntry host = Dns.GetHostEntry(hostIPAddress);
-        //Dns.GetHostAddresses(hostIPAddress);
-
-        IPAddress ipAdress = null;
-        
-        foreach (IPAddress ip in host.AddressList)
+        if (shouldPlayTurn)
         {
-            if (ip.AddressFamily == AddressFamily.InterNetwork)
-            {
-                ipAdress = ip;
-            }
+            shouldPlayTurn = false;
+
+            chessGameMgr.PlayTurn(lastServerMove, (player.playerData.team == ChessGameMgr.EChessTeam.White) ? ChessGameMgr.EChessTeam.Black : ChessGameMgr.EChessTeam.White);
+            chessGameMgr.UpdatePieces();
         }
 
-        if (ipAdress != null)
+        if (shouldProcessDataBuffer)
         {
+            shouldProcessDataBuffer = false;
 
-            socket = new Socket(ipAdress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            IPEndPoint serverEP = new IPEndPoint(ipAdress, port);
-
-            try
+            foreach (byte[] buffer in dataBufferList)
             {
-                socket.Connect(serverEP);
-                connected = true;
-                StateObject stateObject = new StateObject();
-                stateObject.workSocket = socket;
-
-                socket.BeginReceive(stateObject.buffer, 0, StateObject.BUFFER_SIZE, 0,
-                              new AsyncCallback(ReceiveCallBack), stateObject);
+                CheckConvertProcess(buffer);
             }
-            catch (Exception e)
-            {
-                connected = false;
-                if (socket != null)
-                {
-                    socket.Close();
-                }
-            }
+            dataBufferList.Clear();
         }
     }
-
     private void OnDisable()
     {
         Disconnect();
     }
+    #endregion
 
-    public void Disconnect()
-    {
-        if (socket != null)
-        {
-            socket.Shutdown(SocketShutdown.Both);
-            socket.Close();
-        }
-    }
-
-    public void SendData<T>(T _data)
-    {
-        Byte[] dataMSG = SerializationTools.Serialize<T>(_data);
-
-        try
-        {
-            socket.Send(dataMSG);
-        }
-        catch (Exception e)
-        {
-            Debug.Log("error = " + e.ToString());
-        }
-    }
-
-    public string ReceiveMessage()
-    {
-        try
-        {
-            Byte[] msg = new Byte[1024];
-            int nbBytes = socket.Receive(msg);
-            return Encoding.ASCII.GetString(msg, 0, nbBytes);
-        }
-
-        catch (Exception e)
-        {
-            Debug.Log("error = " + e.ToString());
-        }
-
-        return String.Empty;
-    }
-
+    #region Functions
+    #region CallBacks
     public void ReceiveCallBack(IAsyncResult result)
     {
         if (connected)
@@ -123,7 +67,7 @@ public class ClientScript : MonoBehaviour
             int read = s.EndReceive(result);
 
             if (read > 0)
-            { 
+            {
 
                 if (read != StateObject.BUFFER_SIZE)
                 {
@@ -149,30 +93,96 @@ public class ClientScript : MonoBehaviour
             }
         }
     }
+    #endregion
 
-    private void Update()
+    #region Connection
+    public void Connect(string hostIPAddress)
     {
-        if (shouldPlayTurn)
+        //create server socket
+        IPHostEntry host = Dns.GetHostEntry(hostIPAddress);
+        IPAddress ipAdress = FindIPV4Adress(host);
+
+        if (ipAdress != null)
         {
-            shouldPlayTurn = false;
+            socket = new Socket(ipAdress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            IPEndPoint serverEP = new IPEndPoint(ipAdress, port);
 
-            chessGameMgr.PlayTurn(lastServerMove, (player.playerData.team == ChessGameMgr.EChessTeam.White) ? ChessGameMgr.EChessTeam.Black : ChessGameMgr.EChessTeam.White);
-            chessGameMgr.UpdatePieces();
-        }
-
-        if (shouldProcessDataBuffer)
-        {
-            shouldProcessDataBuffer = false;
-
-            foreach (byte[] buffer in dataBufferList)
+            try
             {
-                checkConvertProcess(buffer);
+                socket.Connect(serverEP);
             }
-            dataBufferList.Clear();
+
+            catch (Exception e)
+            {
+                Debug.Log("error = " + e.ToString());
+
+                connected = false;
+                if (socket != null)
+                {
+                    socket.Close();
+                }
+
+                return;
+            }
+
+            finally
+            {
+                connected = true;
+                StateObject stateObject = new StateObject();
+                stateObject.workSocket = socket;
+
+                socket.BeginReceive(stateObject.buffer, 0, StateObject.BUFFER_SIZE, 0,
+                              new AsyncCallback(ReceiveCallBack), stateObject);
+            }
         }
     }
+    public void Disconnect()
+    {
+        if (socket != null)
+        {
+            socket.Shutdown(SocketShutdown.Both);
+            socket.Close();
+        }
+    }
+    #endregion
 
-    private void checkConvertProcess(byte[] buffer)
+    #region Data
+    public void SendData<T>(T _data)
+    {
+        Byte[] dataMSG = SerializationTools.Serialize<T>(_data);
+
+        try
+        {
+            socket.Send(dataMSG);
+        }
+        catch (Exception e)
+        {
+            Debug.Log("error = " + e.ToString());
+        }
+    }
+    #endregion
+
+    #region Messages
+    public string ReceiveMessage()
+    {
+        try
+        {
+            Byte[] msg = new Byte[1024];
+            int nbBytes = socket.Receive(msg);
+            return Encoding.ASCII.GetString(msg, 0, nbBytes);
+        }
+
+        catch (Exception e)
+        {
+            Debug.Log("error = " + e.ToString());
+        }
+
+        return String.Empty;
+    }
+    #endregion
+
+    #region Other
+    private void CheckConvertProcess(byte[] buffer)
     {
         var value = SerializationTools.Deserialize(buffer);
 
@@ -196,8 +206,8 @@ public class ClientScript : MonoBehaviour
 
             case PlayerData player_:
                 player2.playerData.username = player_.username;
-                player.playerData.team      = player_.team;
-                guiMgr.shouldUpdateUI       = true;
+                player.playerData.team = player_.team;
+                guiMgr.shouldUpdateUI = true;
                 teamSelected = true;
                 break;
 
@@ -206,4 +216,19 @@ public class ClientScript : MonoBehaviour
                 break;
         }
     }
+
+    private IPAddress FindIPV4Adress(IPHostEntry host)
+    {
+        foreach (IPAddress ip in host.AddressList)
+        {
+            if (ip.AddressFamily == AddressFamily.InterNetwork)
+            {
+                return ip;
+            }
+        }
+
+        return null;
+    }
+    #endregion
+    #endregion
 }
