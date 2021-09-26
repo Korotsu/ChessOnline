@@ -141,7 +141,7 @@ public partial class ChessGameMgr : MonoBehaviour
 
     EChessTeam teamTurn;
 
-    List<uint> scores;
+    //List<uint> scores;
     [System.NonSerialized] public uint player1Score = 0;
     [System.NonSerialized] public uint player2Score = 0;
 
@@ -158,17 +158,17 @@ public partial class ChessGameMgr : MonoBehaviour
         // Start game
         boardState.Reset();
         teamTurn = EChessTeam.White;
-        if (scores == null)
+        /*if (scores == null)
         {
             scores = new List<uint>();
             scores.Add(0);
             scores.Add(0);
-        }
+        }*/
         if (resetScore)
         {
-            scores.Clear();
+            /*scores.Clear();
             scores.Add(0);
-            scores.Add(0);
+            scores.Add(0);*/
             player1Score = 0;
             player2Score = 0;
         }
@@ -262,10 +262,10 @@ public partial class ChessGameMgr : MonoBehaviour
         return boardState.Squares[pos];
     }
 
-    public uint GetScore(EChessTeam team)
+    /*public uint GetScore(EChessTeam team)
     {
         return scores[(int)team];
-    }
+    }*/
 
     private void UpdateBoardPiece(Transform pieceTransform, int destPos)
     {
@@ -290,7 +290,15 @@ public partial class ChessGameMgr : MonoBehaviour
         return xPos + zPos * BOARD_SIZE;
     }
 
-    private void SetupGame()
+    #endregion
+
+    #region MonoBehaviour
+
+    private TeamPieces[] teamPiecesArray = new TeamPieces[2];
+    private float zOffset = 0.5f;
+    private float widthOffset = 3.5f;
+
+    private void Start()
     {
         pieceLayerMask = 1 << LayerMask.NameToLayer("Piece");
         boardLayerMask = 1 << LayerMask.NameToLayer("Board");
@@ -307,26 +315,13 @@ public partial class ChessGameMgr : MonoBehaviour
         teamPiecesArray[1] = null;
 
         CreatePieces();
-
-
-
+    }
+    void OnEnable()
+    {
         if (OnPlayerTurn != null)
             OnPlayerTurn(teamTurn == player.playerData.team);
         if (OnScoreUpdated != null)
-            OnScoreUpdated(scores[0], scores[1]);
-    }
-
-    #endregion
-
-    #region MonoBehaviour
-
-    private TeamPieces[] teamPiecesArray = new TeamPieces[2];
-    private float zOffset = 0.5f;
-    private float widthOffset = 3.5f;
-
-    void OnEnable()
-    {
-        SetupGame();
+            OnScoreUpdated(player1Score, player2Score);
     }
 
     void Update()

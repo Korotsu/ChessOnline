@@ -30,7 +30,7 @@ public class GUIMgr : MonoBehaviour
 
     [SerializeField] public Player player1 = null;
     [SerializeField] public Player player2 = null;
-    [System.NonSerialized] public bool shouldUpdateUI = false;
+    /*[System.NonSerialized] public bool shouldUpdateUI = false;
     private void Update()
     {
         if (shouldUpdateUI)
@@ -39,7 +39,7 @@ public class GUIMgr : MonoBehaviour
             player2ScoreText.text = string.Format(player2.playerData.username + " : {0}", ChessGameMgr.Instance.player2Score);
             shouldUpdateUI = false;
         }
-    }
+    }*/
 
     // Use this for initialization
     void Awake()
@@ -56,11 +56,11 @@ public class GUIMgr : MonoBehaviour
         ChessGameMgr.Instance.OnPlayerTurn += DisplayTurn;
         ChessGameMgr.Instance.OnScoreUpdated += UpdateScore;
     }
-	
+
     void DisplayTurn(bool isPlayerMove)
     {
         playerTurnTr.gameObject.SetActive(true);
-        if(isPlayerMove)
+        if (isPlayerMove)
             playerTurnText.text = player1.playerData.username + " Turn.";
         else
             playerTurnText.text = player2.playerData.username + " Turn.";
