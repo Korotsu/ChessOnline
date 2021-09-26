@@ -9,6 +9,7 @@ public class JoinMenu : MonoBehaviour
 
     [SerializeField] private GameObject mainMenu = null;
     [SerializeField] private GameObject clientCanvas = null;
+    [SerializeField] private GameObject board = null;
     [SerializeField] public Player player = null;
     private void Start()
     {
@@ -38,6 +39,7 @@ public class JoinMenu : MonoBehaviour
         {
             cs.SendData(player.playerData);
 
+            board.SetActive(true);
             clientCanvas.SetActive(true);
             clientCanvas.transform.GetChild(0).gameObject.SetActive(true);
             GetComponent<Canvas>().enabled = false;

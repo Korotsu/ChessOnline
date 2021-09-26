@@ -6,13 +6,21 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    [HideInInspector] public PlayerData playerData = new PlayerData(); 
+    [HideInInspector] public PlayerData playerData = new PlayerData();
+
+    private void Update()
+    {
+        if (Input.GetButton("Exit"))
+        {
+            Application.Quit();
+        }
+    }
 }
 
 [Serializable]
 public struct PlayerData : ISerializable
 {
-    public string username;   
+    public string username;
     public ChessGameMgr.EChessTeam team;
     public bool isHost;
 
@@ -25,8 +33,8 @@ public struct PlayerData : ISerializable
 
     public void GetObjectData(SerializationInfo info, StreamingContext ctxt)
     {
-        info.AddValue("username", username,typeof(string));
-        info.AddValue("team", team ,typeof(ChessGameMgr.EChessTeam));
-        info.AddValue("isHost", isHost ,typeof(bool));
+        info.AddValue("username", username, typeof(string));
+        info.AddValue("team", team, typeof(ChessGameMgr.EChessTeam));
+        info.AddValue("isHost", isHost, typeof(bool));
     }
 }

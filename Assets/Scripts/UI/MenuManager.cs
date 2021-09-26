@@ -12,7 +12,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private GameObject scoreCanvas = null;
     [SerializeField] private GameObject joinMenu = null;
     [SerializeField] private GameObject hostCanvas = null;
-
+    [SerializeField] private GameObject board = null;
 
     [SerializeField] public Player player = null;
 
@@ -36,6 +36,7 @@ public class MenuManager : MonoBehaviour
         GetComponent<Canvas>().enabled = false;
         hostCanvas.SetActive(true);
         hostCanvas.transform.GetChild(0).gameObject.SetActive(true);
+        board.SetActive(true);
 
         player.playerData.isHost = true;
         player.gameObject.GetComponent<ServerClientScript>().enabled = true;
