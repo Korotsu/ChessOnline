@@ -179,8 +179,8 @@ public class ClientScript : MonoBehaviour
         player2.playerData.username = hostPlayer.username;
         player.playerData.team = hostPlayer.team;
 
-        chessGameManager.enabled = true;
         scoreCanvas.SetActive(true);
+        chessGameManager.enabled = true;
     }
     private void PlayTurn()
     {

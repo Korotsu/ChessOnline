@@ -5,6 +5,7 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
+using UnityEngine.UI;
 using SerializationTool;
 
 public class ServerClientScript : MonoBehaviour
@@ -27,6 +28,7 @@ public class ServerClientScript : MonoBehaviour
     [SerializeField] private Player player1 = null;
     [SerializeField] private Player player2 = null;
     [SerializeField] private GameObject scoreCanvas = null;
+    [SerializeField] private GameObject hostCanvas = null;
 
     #endregion
 
@@ -204,31 +206,35 @@ public class ServerClientScript : MonoBehaviour
     #endregion
 
     #region Other
-    private void PrepareGame(PlayerData player)
+    private void ClientConnected(PlayerData player)
     {
-        System.Random rand = new System.Random();
-
-        int intHostTeam = rand.Next(0, 2);
-        hostTeam = (ChessGameMgr.EChessTeam) intHostTeam; 
-
         player2.playerData.username = player.username;
-        player2.playerData.team = (ChessGameMgr.EChessTeam)(1 - intHostTeam);
+        hostCanvas.transform.GetChild(0).gameObject.SetActive(false);
+        hostCanvas.transform.GetChild(1).gameObject.SetActive(true);
+    }
+    public void PrepareGame(ChessGameMgr.EChessTeam team)
+    {
+        hostTeam = team;
+
+        player2.playerData.team = (hostTeam == ChessGameMgr.EChessTeam.White) ? ChessGameMgr.EChessTeam.Black : ChessGameMgr.EChessTeam.White;
         GetComponent<Player>().playerData.team = hostTeam;
 
-        PlayerData tempData     = player2.playerData;
-        tempData.username       = player1.playerData.username;
+        PlayerData tempData = player2.playerData;
+        tempData.username = player1.playerData.username;
 
         BroadCastData(tempData);
-        
-        chessGameMgr.enabled = true;
 
+        hostCanvas.transform.GetChild(1).gameObject.SetActive(false);
+        hostCanvas.SetActive(false);
+        
         scoreCanvas.SetActive(true);
+        chessGameMgr.enabled = true;
     }
     private void PlayTurn()
     {
         chessGameMgr.PlayTurn(lastClientMove, (hostTeam == ChessGameMgr.EChessTeam.White) ? ChessGameMgr.EChessTeam.Black : ChessGameMgr.EChessTeam.White);
         chessGameMgr.UpdatePieces();
-        
+
         shouldPlayTurn = false;
     }
     private void ProcessDataBuffer()
@@ -238,7 +244,7 @@ public class ServerClientScript : MonoBehaviour
             CheckConvertProcess(buffer);
         }
         dataBufferList.Clear();
-        
+
         shouldProcessDataBuffer = false;
     }
     private void CheckConvertProcess(byte[] buffer)
@@ -256,7 +262,8 @@ public class ServerClientScript : MonoBehaviour
                 break;
 
             case PlayerData player:
-                PrepareGame(player);
+                ClientConnected(player);
+                //PrepareGame(player);
                 break;
 
             default:

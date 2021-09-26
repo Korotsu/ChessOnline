@@ -11,6 +11,7 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private ChessGameMgr chessGameManager = null;
     [SerializeField] private GameObject scoreCanvas = null;
     [SerializeField] private GameObject joinMenu = null;
+    [SerializeField] private GameObject hostCanvas = null;
 
 
     [SerializeField] public Player player = null;
@@ -35,6 +36,9 @@ public class MenuManager : MonoBehaviour
         //chessGameManager.SetActive(true);
         //scoreCanvas.SetActive(true);
         GetComponent<Canvas>().enabled = false;
+        hostCanvas.SetActive(true);
+        hostCanvas.transform.GetChild(0).gameObject.SetActive(true);
+
         player.playerData.isHost = true;
         player.gameObject.GetComponent<ServerClientScript>().enabled = true;
     }

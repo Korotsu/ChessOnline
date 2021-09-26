@@ -16,7 +16,8 @@ public partial class ChessGameMgr : MonoBehaviour
 
     #region singleton
     static ChessGameMgr instance = null;
-    public static ChessGameMgr Instance {
+    public static ChessGameMgr Instance
+    {
         get
         {
             if (instance == null)
@@ -29,6 +30,7 @@ public partial class ChessGameMgr : MonoBehaviour
     //[SerializeField]
     //private bool IsAIEnabled = false;
     [SerializeField] private Player player = null;
+    [SerializeField] private GameObject hostCanvas = null;
     private ChessAI chessAI = null;
     private Transform boardTransform = null;
     private static int BOARD_SIZE = 8;
@@ -200,6 +202,18 @@ public partial class ChessGameMgr : MonoBehaviour
                 // remove extra piece instances if pawn promotions occured
                 teamPiecesArray[0].ClearPromotedPieces();
                 teamPiecesArray[1].ClearPromotedPieces();
+
+                if (player.playerData.isHost)
+                {
+                    hostCanvas.SetActive(true);
+                    hostCanvas.transform.GetChild(1).gameObject.SetActive(true);
+                }
+                else
+                {
+                    //show waiting screen to client;
+                }
+                enabled = false;
+                return;
             }
             else
             {
@@ -213,13 +227,13 @@ public partial class ChessGameMgr : MonoBehaviour
 
     public void CheckOnlineState(Move move)
     {
-        PlayTurn(move,player.playerData.team);
+        PlayTurn(move, player.playerData.team);
 
         UpdatePieces();
 
         if (player.playerData.isHost == true)
         {
-            player.gameObject.GetComponent<ServerClientScript>().BroadCastData(move);    
+            player.gameObject.GetComponent<ServerClientScript>().BroadCastData(move);
         }
 
         else
@@ -276,15 +290,7 @@ public partial class ChessGameMgr : MonoBehaviour
         return xPos + zPos * BOARD_SIZE;
     }
 
-    #endregion
-
-    #region MonoBehaviour
-
-    private TeamPieces[] teamPiecesArray = new TeamPieces[2];
-    private float zOffset = 0.5f;
-    private float widthOffset = 3.5f;
-
-    void Start()
+    private void SetupGame()
     {
         pieceLayerMask = 1 << LayerMask.NameToLayer("Piece");
         boardLayerMask = 1 << LayerMask.NameToLayer("Board");
@@ -310,9 +316,22 @@ public partial class ChessGameMgr : MonoBehaviour
             OnScoreUpdated(scores[0], scores[1]);
     }
 
+    #endregion
+
+    #region MonoBehaviour
+
+    private TeamPieces[] teamPiecesArray = new TeamPieces[2];
+    private float zOffset = 0.5f;
+    private float widthOffset = 3.5f;
+
+    void OnEnable()
+    {
+        SetupGame();
+    }
+
     void Update()
     {
-       if(teamTurn == player.playerData.team)
+        if (teamTurn == player.playerData.team)
             UpdatePlayerTurn();
     }
     #endregion
