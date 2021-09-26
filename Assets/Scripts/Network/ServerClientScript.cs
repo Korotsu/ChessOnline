@@ -226,7 +226,7 @@ public class ServerClientScript : MonoBehaviour
 
         hostCanvas.transform.GetChild(1).gameObject.SetActive(false);
         hostCanvas.SetActive(false);
-        
+
         scoreCanvas.SetActive(true);
         chessGameMgr.enabled = true;
     }
@@ -263,7 +263,6 @@ public class ServerClientScript : MonoBehaviour
 
             case PlayerData player:
                 ClientConnected(player);
-                //PrepareGame(player);
                 break;
 
             default:
@@ -275,7 +274,7 @@ public class ServerClientScript : MonoBehaviour
     {
         foreach (Socket clientSocket in clientSocketList)
         {
-            if (clientSocket != null)
+            if (clientSocket != null && clientSocket.Connected)
             {
                 //shutdown client socket
                 try

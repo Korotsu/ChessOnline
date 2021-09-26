@@ -31,6 +31,7 @@ public partial class ChessGameMgr : MonoBehaviour
     //private bool IsAIEnabled = false;
     [SerializeField] private Player player = null;
     [SerializeField] private GameObject hostCanvas = null;
+    [SerializeField] private GameObject clientCanvas = null;
     private ChessAI chessAI = null;
     private Transform boardTransform = null;
     private static int BOARD_SIZE = 8;
@@ -140,8 +141,6 @@ public partial class ChessGameMgr : MonoBehaviour
     public BoardState GetBoardState() { return boardState; }
 
     EChessTeam teamTurn;
-
-    //List<uint> scores;
     [System.NonSerialized] public uint player1Score = 0;
     [System.NonSerialized] public uint player2Score = 0;
 
@@ -158,17 +157,8 @@ public partial class ChessGameMgr : MonoBehaviour
         // Start game
         boardState.Reset();
         teamTurn = EChessTeam.White;
-        /*if (scores == null)
-        {
-            scores = new List<uint>();
-            scores.Add(0);
-            scores.Add(0);
-        }*/
         if (resetScore)
         {
-            /*scores.Clear();
-            scores.Add(0);
-            scores.Add(0);*/
             player1Score = 0;
             player2Score = 0;
         }
@@ -194,7 +184,6 @@ public partial class ChessGameMgr : MonoBehaviour
                 else
                     player2Score++;
 
-                //scores[(int)teamTurn]++;
                 if (OnScoreUpdated != null)
                     OnScoreUpdated(player1Score, player2Score);
 
@@ -210,7 +199,8 @@ public partial class ChessGameMgr : MonoBehaviour
                 }
                 else
                 {
-                    //show waiting screen to client;
+                    clientCanvas.SetActive(true);
+                    clientCanvas.transform.GetChild(0).gameObject.SetActive(true);
                 }
                 enabled = false;
                 return;
@@ -261,11 +251,6 @@ public partial class ChessGameMgr : MonoBehaviour
     {
         return boardState.Squares[pos];
     }
-
-    /*public uint GetScore(EChessTeam team)
-    {
-        return scores[(int)team];
-    }*/
 
     private void UpdateBoardPiece(Transform pieceTransform, int destPos)
     {

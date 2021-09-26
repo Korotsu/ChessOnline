@@ -23,6 +23,7 @@ public class ClientScript : MonoBehaviour
     [SerializeField] private Player player2 = null;
     [SerializeField] private ChessGameMgr chessGameManager = null;
     [SerializeField] private GameObject scoreCanvas = null;
+    [SerializeField] private GameObject clientCanvas = null;
 
     #endregion
 
@@ -130,10 +131,22 @@ public class ClientScript : MonoBehaviour
     }
     public void Disconnect()
     {
-        if (socket != null)
+        if (socket != null && socket.Connected)
         {
-            socket.Shutdown(SocketShutdown.Both);
-            socket.Close();
+            //shutdown client socket
+            try
+            {
+                socket.Shutdown(SocketShutdown.Both);
+            }
+            catch (Exception e)
+            {
+                Debug.Log("error = " + e.ToString());
+            }
+
+            finally
+            {
+                socket.Close();
+            }
         }
     }
     #endregion
@@ -181,6 +194,9 @@ public class ClientScript : MonoBehaviour
 
         scoreCanvas.SetActive(true);
         chessGameManager.enabled = true;
+
+        clientCanvas.transform.GetChild(0).gameObject.SetActive(false);
+        clientCanvas.SetActive(false);
     }
     private void PlayTurn()
     {
